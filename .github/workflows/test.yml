@@ -156,6 +156,7 @@ jobs:
           echo Git workspace: ${{ github.workspace }}
           ls -la
           ls -la app1
+          ls -la ~/.npm
 
       - name: Build App 1
         working-directory: "app1"
@@ -168,6 +169,7 @@ jobs:
           pwd
           echo Git workspace: ${{ github.workspace }}
           ls -la app1
+          ls -la ~/.npm
 
   # buildApp2:
   #   name: Build App 2
