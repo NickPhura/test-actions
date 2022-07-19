@@ -42,7 +42,7 @@ jobs:
           cache-name: cache-repo
         with:
           # npm cache files are stored in `~/.npm` on Linux/macOS
-          path: ${{ github.workspace }}
+          path: ${{ github.workspace }}/*
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.sha }}
           restore-keys: |
             ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.sha }}
@@ -118,7 +118,7 @@ jobs:
           cache-name: cache-repo
         with:
           # npm cache files are stored in `~/.npm` on Linux/macOS
-          path: ${{ github.workspace }}
+          path: ${{ github.workspace }}/*
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.sha }}
           restore-keys: |
             ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.sha }}
@@ -147,6 +147,16 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Print Vars 3
+        run: |
+          pwd
+          echo Git workspace: ${{ github.workspace }}
+          ls -la
+
+      # Checkout the PR branch
+      - name: Checkout Target Branch
+        uses: actions/checkout@v2
+
+      - name: Print Vars 4
         run: |
           pwd
           echo Git workspace: ${{ github.workspace }}
