@@ -22,21 +22,29 @@ jobs:
 
       - name: Print Vars
         run: |
-          echo Git workspace: ${{ github }}
+          echo Git workspace: ${{ github.workspace }}
           echo "Git workspace: $GITHUB_WORKSPACE"
 
+      - name: Upload Target Branch
+        uses: actions/download-artifact@v3
+        with:
+          name: repo-cache
+          path: /home/runner/work/test-actions/test-actions
 
-      # - name: Upload Target Branch
-      #   uses: actions/download-artifact@v3
-      #   with:
-      #     name: repo-cache
-      #     path: path/to/artifact/world.txt
+      - name: Print Vars
+        run: |
+          ls /home/runner/work/test-actions
+          ls /home/runner/work/test-actions/test-actions
 
-      # - name: Download Target Branch
-      #   uses: actions/download-artifact@v3
-      #   with:
-      #     name: repo-cache
-      #     path: path/to/artifact/world.txt
+      - name: Download Target Branch
+        uses: actions/download-artifact@v3
+        with:
+          name: /home/runner/work/test-actions-cache/test-actions
+
+      - name: Print Vars
+        run: |
+          ls /home/runner/work/test-actions-cache
+          ls /home/runner/work/test-actions-cache/test-actions
 
   # buildApp1:
   #   name: Build App 1
