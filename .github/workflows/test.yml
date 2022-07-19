@@ -45,9 +45,7 @@ jobs:
           path: ${{ github.workspace }}
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.sha }}
           restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
+            ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.sha }}
 
       - name: Print Vars
         run: |
@@ -123,9 +121,7 @@ jobs:
           path: ${{ github.workspace }}
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.sha }}
           restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
+            ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.sha }}
 
       # Checkout the PR branch
       - name: Test IF TRUE
@@ -170,7 +166,7 @@ jobs:
         with:
           # npm cache files are stored in `~/.npm` on Linux/macOS
           path: ~/.npm
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('app1/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-build-${{ env.cache-name }}-
             ${{ runner.os }}-build-
@@ -183,7 +179,7 @@ jobs:
           ls -la
 
       - name: Build App 1
-        working-directory: "./app1"
+        working-directory: "app1"
         run: |
           npm ci --only=production
 
@@ -227,6 +223,6 @@ jobs:
   #           ${{ runner.os }}-
 
   #     - name: Build App 2
-  #       working-directory: "./app2"
+  #       working-directory: "app2"
   #       run: |
   #         npm ci --only=production
