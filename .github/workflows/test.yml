@@ -98,9 +98,8 @@ jobs:
           pwd
           echo Git workspace: ${{ github.workspace }}
           ls -la
-          steps.cache-repo.outputs
-          echo ${{ steps.cache-repo.outputs }}
-          echo ${{ steps.cache-repo.outputs.cache-hit }}
+          echo "output ${{ steps.cache-repo.outputs }}"
+          echo " cache hit ${{ steps.cache-repo.outputs.cache-hit }}"
 
       # Cache Node modules
       - name: Cache repo
@@ -121,9 +120,8 @@ jobs:
           pwd
           echo Git workspace: ${{ github.workspace }}
           ls -la
-          steps.cache-repo.outputs
-          echo ${{ steps.cache-repo.outputs }}
-          echo ${{ steps.cache-repo.outputs.cache-hit }}
+          echo "output ${{ steps.cache-repo.outputs }}"
+          echo " cache hit ${{ steps.cache-repo.outputs.cache-hit }}"
 
       # Checkout the PR branch
       - name: Checkout Target Branch
@@ -156,7 +154,7 @@ jobs:
             ${{ runner.os }}-build-
             ${{ runner.os }}-
 
-      - name: Print Vars
+      - name: Print Vars 4
         run: |
           pwd
           echo Git workspace: ${{ github.workspace }}
@@ -167,7 +165,7 @@ jobs:
         run: |
           npm ci --only=production
 
-      - name: Print Vars
+      - name: Print Vars 5
         run: |
           pwd
           echo Git workspace: ${{ github.workspace }}
