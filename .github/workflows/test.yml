@@ -26,7 +26,7 @@ jobs:
           echo "Git workspace: $GITHUB_WORKSPACE"
 
       - name: Upload Target Branch
-        uses: actions/download-artifact@v3
+        uses: actions/upload-artifact@v3
         with:
           name: repo-cache
           path: /home/runner/work/test-actions/test-actions
