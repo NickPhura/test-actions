@@ -98,6 +98,7 @@ jobs:
           pwd
           echo Git workspace: ${{ github.workspace }}
           ls -la
+          echo ${{ steps.cache.outputs.cache-hit }}
 
       # Cache Node modules
       - name: Cache repo
@@ -118,10 +119,7 @@ jobs:
           pwd
           echo Git workspace: ${{ github.workspace }}
           ls -la
-
-      - name: Print Vars
-        run: |
-          echo steps.cache.outputs.cache-hit
+          echo ${{ steps.cache.outputs.cache-hit }}
 
       # Checkout the PR branch
       - name: Checkout Target Branch
