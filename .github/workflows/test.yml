@@ -37,6 +37,7 @@ jobs:
       # Cache Node modules
       - name: Cache repo
         uses: actions/cache@v2
+        id: cache-repo
         env:
           cache-name: cache-repo
         with:
@@ -101,19 +102,20 @@ jobs:
 
       # Checkout the PR branch
       - name: Test IF TRUE
-        if: teps.cache-repo.outputs.cache-hit == 'true'
+        if: steps.cache-repo.outputs.cache-hit == 'true'
         run: |
           echo "cache-hit equals true"
 
       # Checkout the PR branch
       - name: Test IF FALSE
-        if: teps.cache-repo.outputs.cache-hit == 'false'
+        if: steps.cache-repo.outputs.cache-hit == 'false'
         run: |
           echo "cache-hit equals false"
 
       # Cache Node modules
       - name: Cache repo
         uses: actions/cache@v2
+        id: cache-repo
         env:
           cache-name: cache-repo
         with:
@@ -127,13 +129,13 @@ jobs:
 
       # Checkout the PR branch
       - name: Test IF TRUE
-        if: teps.cache-repo.outputs.cache-hit == 'true'
+        if: steps.cache-repo.outputs.cache-hit == 'true'
         run: |
           echo "cache-hit equals true"
 
       # Checkout the PR branch
       - name: Test IF FALSE
-        if: teps.cache-repo.outputs.cache-hit == 'false'
+        if: steps.cache-repo.outputs.cache-hit == 'false'
         run: |
           echo "cache-hit equals false"
 
