@@ -1,6 +1,6 @@
 # PR Based Deploy On OpenShift
 # Builds and Deploys unmerged PR's to temporary pods/services/routes/etc in the OpenShift Dev environment.
-name: PR-Based Deploy on OpenShift
+name: Test Actions
 
 on:
   pull_request:
@@ -22,12 +22,7 @@ jobs:
       - name: Checkout Target Branch
         uses: actions/checkout@v2
 
-      - run: echo "::debug::$GITHUB_WORKSPACE"
-
-      - run: echo "::debug::{{ $GITHUB_WORKSPACE }}"
-
       - run: echo "::debug::${{ GITHUB_WORKSPACE }}"
-
 
       # - name: Upload Target Branch
       #   uses: actions/download-artifact@v3
