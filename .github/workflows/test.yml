@@ -16,8 +16,6 @@ jobs:
     runs-on: ubuntu-latest
     env:
       PR_NUMBER: ${{ github.event.number }}
-    needs:
-      - checkEnv
     steps:
       - name: Checkout Target Branch
         uses: actions/checkout@v2
