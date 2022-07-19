@@ -20,7 +20,11 @@ jobs:
       - name: Checkout Target Branch
         uses: actions/checkout@v2
 
-      - run: echo "::debug::${{ github.workspace }}"
+      - name: Print Vars
+        run: |
+          echo Git workspace: ${{ github }}
+          echo Git workspace: ${{ $GITHUB_WORKSPACE }}
+
 
       # - name: Upload Target Branch
       #   uses: actions/download-artifact@v3
