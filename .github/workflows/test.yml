@@ -23,7 +23,7 @@ jobs:
       - name: Print Vars
         run: |
           echo Git workspace: ${{ github }}
-          echo Git workspace: ${{ $GITHUB_WORKSPACE }}
+          echo "Git workspace: $GITHUB_WORKSPACE"
 
 
       # - name: Upload Target Branch
