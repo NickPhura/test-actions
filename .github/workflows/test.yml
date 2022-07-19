@@ -98,18 +98,6 @@ jobs:
           echo Git workspace: ${{ github.workspace }}
           ls -la
 
-      # Checkout the PR branch
-      - name: Test IF TRUE
-        if: steps.cache-repo.outputs.cache-hit == 'true'
-        run: |
-          echo "cache-hit equals true"
-
-      # Checkout the PR branch
-      - name: Test IF FALSE
-        if: steps.cache-repo.outputs.cache-hit == 'false'
-        run: |
-          echo "cache-hit equals false"
-
       # Cache Node modules
       - name: Cache repo
         uses: actions/cache@v2
@@ -122,18 +110,6 @@ jobs:
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.sha }}
           restore-keys: |
             ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.sha }}
-
-      # Checkout the PR branch
-      - name: Test IF TRUE
-        if: steps.cache-repo.outputs.cache-hit == 'true'
-        run: |
-          echo "cache-hit equals true"
-
-      # Checkout the PR branch
-      - name: Test IF FALSE
-        if: steps.cache-repo.outputs.cache-hit == 'false'
-        run: |
-          echo "cache-hit equals false"
 
       - name: Print Vars 2
         run: |
@@ -191,7 +167,8 @@ jobs:
       - name: Build App 1
         working-directory: "app1"
         run: |
-          npm ci --only=production
+          # npm ci --only=production
+          npm install
 
       - name: Print Vars 5
         run: |
@@ -235,4 +212,5 @@ jobs:
   #     - name: Build App 2
   #       working-directory: "app2"
   #       run: |
-  #         npm ci --only=production
+  #         # npm ci --only=production
+  #         npm install
