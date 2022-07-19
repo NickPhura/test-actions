@@ -95,6 +95,10 @@ jobs:
     steps:
       - name: Print Vars
         run: |
+          pwd
+
+      - name: Print Vars
+        run: |
           ls -la
 
       # Cache Node modules
@@ -164,7 +168,7 @@ jobs:
     env:
       PR_NUMBER: ${{ github.event.number }}
     needs:
-      - cacheRepo
+      - buildApp1
     steps:
       # Checkout the PR branch
       - name: Checkout Target Branch
