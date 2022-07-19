@@ -136,7 +136,6 @@ jobs:
         working-directory: "./app1"
         run: |
           npm ci --only=production
-          DEBUG=* npm run db:build -- --pr=$PR_NUMBER
 
   buildApp2:
     name: Build App 2
@@ -175,4 +174,3 @@ jobs:
         working-directory: "./app2"
         run: |
           npm ci --only=production
-          DEBUG=* npm run db:build -- --pr=$PR_NUMBER
