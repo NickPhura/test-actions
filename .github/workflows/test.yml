@@ -97,6 +97,7 @@ jobs:
           pwd
           echo Git workspace: ${{ github.workspace }}
           ls -la
+          ls -la app1
 
       # Cache Node modules
       - name: Cache repo
@@ -116,6 +117,7 @@ jobs:
           pwd
           echo Git workspace: ${{ github.workspace }}
           ls -la
+          ls -la app1
 
       # Checkout the PR branch
       - name: Checkout Target Branch
@@ -127,16 +129,7 @@ jobs:
           pwd
           echo Git workspace: ${{ github.workspace }}
           ls -la
-
-      # Checkout the PR branch
-      - name: Checkout Target Branch
-        uses: actions/checkout@v2
-
-      - name: Print Vars 4
-        run: |
-          pwd
-          echo Git workspace: ${{ github.workspace }}
-          ls -la
+          ls -la app1
 
       # Install Node - for `node` and `npm` commands
       - name: Setup Node.js
@@ -163,6 +156,7 @@ jobs:
           pwd
           echo Git workspace: ${{ github.workspace }}
           ls -la
+          ls -la app1
 
       - name: Build App 1
         working-directory: "app1"
@@ -174,7 +168,7 @@ jobs:
         run: |
           pwd
           echo Git workspace: ${{ github.workspace }}
-          ls -la
+          ls -la app1
 
   # buildApp2:
   #   name: Build App 2
