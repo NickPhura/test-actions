@@ -39,7 +39,8 @@ jobs:
       - name: Download Target Branch
         uses: actions/download-artifact@v3
         with:
-          name: /home/runner/work/test-actions-cache/test-actions
+          name: repo-cache
+          path: /home/runner/work/test-actions-cache/test-actions
 
       - name: Print Vars
         run: |
