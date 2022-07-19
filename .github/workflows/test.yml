@@ -93,6 +93,10 @@ jobs:
     needs:
       - cacheRepo
     steps:
+      - name: Print Vars
+        run: |
+          ls -la
+
       # Cache Node modules
       - name: Cache repo
         uses: actions/cache@v2
@@ -106,11 +110,19 @@ jobs:
             ${{ runner.os }}-build-${{ env.cache-name }}-
             ${{ runner.os }}-build-
             ${{ runner.os }}-
-  
+
+      - name: Print Vars
+        run: |
+          ls -la
+
       # Checkout the PR branch
       - name: Checkout Target Branch
         if: steps.cache.outputs.cache-hit != 'true'
         uses: actions/checkout@v2
+
+      - name: Print Vars
+        run: |
+          ls -la
 
       # Install Node - for `node` and `npm` commands
       - name: Setup Node.js
@@ -132,10 +144,18 @@ jobs:
             ${{ runner.os }}-build-
             ${{ runner.os }}-
 
+      - name: Print Vars
+        run: |
+          ls -la
+
       - name: Build App 1
         working-directory: "./app1"
         run: |
           npm ci --only=production
+
+      - name: Print Vars
+        run: |
+          ls -la
 
   buildApp2:
     name: Build App 2
