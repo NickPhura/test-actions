@@ -97,7 +97,6 @@ jobs:
           pwd
           echo Git workspace: ${{ github.workspace }}
           ls -la
-          ls -la app1
 
       # Cache Node modules
       - name: Cache repo
