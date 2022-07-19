@@ -1,0 +1,34 @@
+{
+  "name": "app",
+  "version": "1.0.0",
+  "description": "Contains dependencies and scripts for executing OpenShift pipeline build/deploy scripts",
+  "license": "Apache-2.0",
+  "engines": {
+    "node": ">= 14.0.0",
+    "npm": ">= 6.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bcgov/ocp-sso.git"
+  },
+  "scripts": {
+    "build": "node scripts/build.js",
+    "deploy": "node scripts/build.js",
+    "clean": "node scripts/build.js",
+    "lint": "eslint . --ignore-pattern 'node_modules' --ext .js,.ts",
+    "lint-fix": "eslint . --fix --ignore-pattern 'node_modules' --ext .js,.ts",
+    "format": "prettier --check \"./**/*.{js,jsx,ts,tsx,css,scss}\"",
+    "format-fix": "prettier --write \"./**/*.{js,jsx,ts,tsx,json,css,scss}\""
+  },
+  "dependencies": {
+    "debug": "^4.2.0",
+    "lodash.isempty": "^4.0.1",
+    "lodash.isfunction": "^3.0.9",
+    "lodash.isplainobject": "^4.0.6",
+    "lodash.isstring": "^4.0.1",
+    "pipeline-cli": "NickPhura/pipeline-cli#5c3743df1a85c9bfc2a65041a1295db8074c940d"
+  },
+  "devDependencies": {
+    "prettier": "~2.3.2"
+  }
+}
