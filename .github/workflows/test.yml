@@ -37,7 +37,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: repo-cache
-          path: $GITHUB_WORKSPACE
+          path: ${{ github.workspace }}
 
       - name: Print Vars
         run: |
