@@ -25,6 +25,14 @@ jobs:
           echo Git workspace: ${{ github.workspace }}
           echo "Git workspace: $GITHUB_WORKSPACE"
 
+      - name: Print Vars
+        run: |
+          ls /home/runner/work/test-actions
+
+      - name: Print Vars
+        run: |
+          ls /home/runner/work/test-actions/test-actions
+
       - name: Upload Target Branch
         uses: actions/upload-artifact@v3
         with:
@@ -34,6 +42,9 @@ jobs:
       - name: Print Vars
         run: |
           ls /home/runner/work/test-actions
+
+      - name: Print Vars
+        run: |
           ls /home/runner/work/test-actions/test-actions
 
       - name: Download Target Branch
@@ -45,6 +56,9 @@ jobs:
       - name: Print Vars
         run: |
           ls /home/runner/work/test-actions-cache
+
+      - name: Print Vars
+        run: |
           ls /home/runner/work/test-actions-cache/test-actions
 
   # buildApp1:
