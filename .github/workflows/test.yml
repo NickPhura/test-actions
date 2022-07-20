@@ -86,7 +86,7 @@ jobs:
       - name: Build App 1
         working-directory: "app1"
         run: |
-          npm ci --only=production --verbose
+          npm install --only=production --verbose
 
   buildApp2:
     name: Build App 2
@@ -136,4 +136,4 @@ jobs:
       - name: Build App 2
         working-directory: "app2"
         run: |
-          npm ci --only=production --verbose
+          npm install --only=production --verbose
