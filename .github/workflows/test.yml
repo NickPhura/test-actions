@@ -17,6 +17,12 @@ jobs:
     env:
       PR_NUMBER: ${{ github.event.number }}
     steps:
+      # Install Node - for `node` and `npm` commands
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 14
+
       - name: Checkout Target Branch
         uses: actions/checkout@v2
 
@@ -33,12 +39,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.sha }}
 
-      # Install Node - for `node` and `npm` commands
-      - name: Setup Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: 14
-
   buildApp1:
     name: Build App 1
     runs-on: ubuntu-latest
@@ -48,6 +48,12 @@ jobs:
     needs:
       - cacheRepo
     steps:
+      # Install Node - for `node` and `npm` commands
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 14
+
       # Cache the repo
       - name: Cache repo
         uses: actions/cache@v2
@@ -65,12 +71,6 @@ jobs:
         if: steps.cache-repo.outputs.cache-hit != 'true'
         uses: actions/checkout@v2
 
-      # # Install Node - for `node` and `npm` commands
-      # - name: Setup Node.js
-      #   uses: actions/setup-node@v2
-      #   with:
-      #     node-version: 14
-
       # Cache Node modules
       - name: Cache node modules
         uses: actions/cache@v2
@@ -86,8 +86,7 @@ jobs:
       - name: Build App 1
         working-directory: "app1"
         run: |
-          # npm ci --only=production
-          npm install --loglevel verbose
+          npm ci --only=production --verbose
 
   buildApp2:
     name: Build App 2
@@ -99,6 +98,12 @@ jobs:
       - cacheRepo
       - buildApp1
     steps:
+      # Install Node - for `node` and `npm` commands
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 14
+
       # Cache the repo
       - name: Cache repo
         uses: actions/cache@v2
@@ -131,5 +136,4 @@ jobs:
       - name: Build App 2
         working-directory: "app2"
         run: |
-          # npm ci --only=production
-          npm install --loglevel verbose --offline
+          npm ci --only=production --verbose
