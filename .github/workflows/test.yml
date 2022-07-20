@@ -1,6 +1,6 @@
 # PR Based Deploy On OpenShift
 # Builds and Deploys unmerged PR's to temporary pods/services/routes/etc in the OpenShift Dev environment.
-name: PR-Based Deploy on OpenShift
+name: Test Actions
 
 on:
   pull_request:
@@ -16,106 +16,124 @@ jobs:
     runs-on: ubuntu-latest
     env:
       PR_NUMBER: ${{ github.event.number }}
-    needs:
-      - checkEnv
     steps:
+      # Install Node - for `node` and `npm` commands
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 14
+
       - name: Checkout Target Branch
         uses: actions/checkout@v2
 
-      - run: echo "::debug::$GITHUB_WORKSPACE"
+      # Cache Node modules
+      - name: Cache repo
+        uses: actions/cache@v2
+        id: cache-repo
+        env:
+          cache-name: cache-repo
+        with:
+          # npm cache files are stored in `~/.npm` on Linux/macOS
+          path: ${{ github.workspace }}/*
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.sha }}
 
-      - run: echo "::debug::{{ $GITHUB_WORKSPACE }}"
+  buildApp1:
+    name: Build App 1
+    runs-on: ubuntu-latest
+    if: ${{ github.event.pull_request.merged == false && github.event.pull_request.draft == false }}
+    env:
+      PR_NUMBER: ${{ github.event.number }}
+    needs:
+      - cacheRepo
+    steps:
+      # Install Node - for `node` and `npm` commands
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 14
 
-      - run: echo "::debug::${{ GITHUB_WORKSPACE }}"
+      # Cache the repo
+      - name: Cache repo
+        uses: actions/cache@v2
+        id: cache-repo
+        env:
+          cache-name: cache-repo
+        with:
+          path: ${{ github.workspace }}/*
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.sha }}
 
-      # - name: Upload Target Branch
-      #   uses: actions/download-artifact@v3
-      #   with:
-      #     name: repo-cache
-      #     path: path/to/artifact/world.txt
+      # Checkout the branch
+      - name: Checkout Target Branch
+        if: steps.cache-repo.outputs.cache-hit != 'true'
+        uses: actions/checkout@v2
 
-      # - name: Download Target Branch
-      #   uses: actions/download-artifact@v3
-      #   with:
-      #     name: repo-cache
-      #     path: path/to/artifact/world.txt
+      # Cache Node modules
+      - name: Cache node modules
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-node-modules
+        with:
+          # npm cache files are stored in `~/.npm` on Linux/macOS
+          path: ~/.npm
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
 
-  # buildApp1:
-  #   name: Build App 1
-  #   runs-on: ubuntu-latest
-  #   if: ${{ github.event.pull_request.merged == false && github.event.pull_request.draft == false }}
-  #   env:
-  #     PR_NUMBER: ${{ github.event.number }}
-  #   needs:
-  #     - scaleDownPods
-  #   steps:
-  #     # Checkout the PR branch
-  #     - name: Checkout Target Branch
-  #       uses: actions/checkout@v2
+      - name: Build App 1
+        working-directory: "app1"
+        run: |
+          npm install --only=production --loglevel verbose
 
-  #     # Install Node - for `node` and `npm` commands
-  #     - name: Setup Node.js
-  #       uses: actions/setup-node@v2
-  #       with:
-  #         node-version: 14
+  buildApp2:
+    name: Build App 2
+    runs-on: ubuntu-latest
+    if: ${{ github.event.pull_request.merged == false && github.event.pull_request.draft == false }}
+    env:
+      PR_NUMBER: ${{ github.event.number }}
+    needs:
+      - cacheRepo
+      - buildApp1
+    steps:
+      # Install Node - for `node` and `npm` commands
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 14
 
-  #     # Cache Node modules
-  #     - name: Cache node modules
-  #       uses: actions/cache@v2
-  #       env:
-  #         cache-name: cache-node-modules
-  #       with:
-  #         # npm cache files are stored in `~/.npm` on Linux/macOS
-  #         path: ~/.npm
-  #         key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
-  #         restore-keys: |
-  #           ${{ runner.os }}-build-${{ env.cache-name }}-
-  #           ${{ runner.os }}-build-
-  #           ${{ runner.os }}-
+      # Cache the repo
+      - name: Cache repo
+        uses: actions/cache@v2
+        id: cache-repo
+        env:
+          cache-name: cache-repo
+        with:
+          path: ${{ github.workspace }}/*
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.sha }}
 
-  #     - name: Build App 1
-  #       working-directory: "./database/.pipeline/"
-  #       run: |
-  #         # npm install
-  #         npm ci --only=production
-  #         DEBUG=* npm run db:build -- --pr=$PR_NUMBER
+      # Checkout the branch
+      - name: Checkout Target Branch
+        if: steps.cache-repo.outputs.cache-hit != 'true'
+        uses: actions/checkout@v2
 
-  # buildApp2:
-  #   name: Build App 2
-  #   runs-on: ubuntu-latest
-  #   if: ${{ github.event.pull_request.merged == false && github.event.pull_request.draft == false }}
-  #   env:
-  #     PR_NUMBER: ${{ github.event.number }}
-  #   needs:
-  #     - scaleDownPods
-  #   steps:
-  #     # Checkout the PR branch
-  #     - name: Checkout Target Branch
-  #       uses: actions/checkout@v2
+      # Cache Node modules
+      - name: Cache node modules
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-node-modules
+        with:
+          # npm cache files are stored in `~/.npm` on Linux/macOS
+          path: ~/.npm
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('*/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('*/package-lock.json') }}
 
-  #     # Install Node - for `node` and `npm` commands
-  #     - name: Setup Node.js
-  #       uses: actions/setup-node@v2
-  #       with:
-  #         node-version: 14
-
-  #     # Cache Node modules
-  #     - name: Cache node modules
-  #       uses: actions/cache@v2
-  #       env:
-  #         cache-name: cache-node-modules
-  #       with:
-  #         # npm cache files are stored in `~/.npm` on Linux/macOS
-  #         path: ~/.npm
-  #         key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
-  #         restore-keys: |
-  #           ${{ runner.os }}-build-${{ env.cache-name }}-
-  #           ${{ runner.os }}-build-
-  #           ${{ runner.os }}-
-
-  #     - name: Build App 2
-  #       working-directory: "./database/.pipeline/"
-  #       run: |
-  #         # npm install
-  #         npm ci --only=production
-  #         DEBUG=* npm run db:build -- --pr=$PR_NUMBER
+      - name: Build App 2
+        working-directory: "app2"
+        run: |
+          npm install --only=production --loglevel verbose
