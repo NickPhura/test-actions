@@ -71,7 +71,7 @@ jobs:
         if: steps.cache-repo.outputs.cache-hit != 'true'
         uses: actions/checkout@v3
 
-      - uses: technote-space/get-diff-action@v6
+      - uses: technote-space/get-diff-action@v4.0.1
         with:
           PATTERNS: |
             subfolder/**
