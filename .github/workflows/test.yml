@@ -79,7 +79,7 @@ jobs:
             package.json
             package-lock.json
           RELATIVE: 'app1'
-      - run: echo '${{ env.GIT_DIFF }}' | jq
+      - run: echo '${{ env.GIT_DIFF }}'
 
       # Cache Node modules
       - name: Cache node modules
