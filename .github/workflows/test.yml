@@ -59,21 +59,21 @@ jobs:
                 - 'app2/README.md'
               paths:
                 - 'app2/**'
-          concurrent_skipping: "never"
-          skip_after_successful_duplicate: "true"
           paths_ignore: '["**/README.md"]'
 
   buildApp1:
     name: Build App 1
     runs-on: ubuntu-latest
-    # if: ${{ github.event.pull_request.merged == false && github.event.pull_request.draft == false }}
-    if: ${{ github.event.pull_request.merged == false && github.event.pull_request.draft == false && (needs.pre_job.outputs.should_skip != 'true' || !fromJSON(needs.pre_job.outputs.paths_result).app1.should_skip) }}
+    if: ${{ github.event.pull_request.merged == false && github.event.pull_request.draft == false }}
+    # if: ${{ github.event.pull_request.merged == false && github.event.pull_request.draft == false && (needs.pre_job.outputs.should_skip != 'true' || !fromJSON(needs.pre_job.outputs.paths_result).app1.should_skip) }}
     env:
       PR_NUMBER: ${{ github.event.number }}
     needs:
       - cacheRepo
       - pre_job
     steps:
+      - run: echo "${{ needs.pre_job.outputs.should_skip }}"
+      - run: echo "${{ fromJSON(needs.pre_job.outputs.paths_result).app1.should_skip }}"
       # Install Node - for `node` and `npm` commands
       - name: Setup Node.js
         uses: actions/setup-node@v3
@@ -127,6 +127,8 @@ jobs:
       - cacheRepo
       - pre_job
     steps:
+      - run: echo "${{ needs.pre_job.outputs.should_skip }}"
+      - run: echo "${{ fromJSON(needs.pre_job.outputs.paths_result).app1.should_skip }}"
       # Install Node - for `node` and `npm` commands
       - name: Setup Node.js
         uses: actions/setup-node@v3
