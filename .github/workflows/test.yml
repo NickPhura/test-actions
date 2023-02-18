@@ -50,15 +50,19 @@ jobs:
         with:
           paths_filter: |
             app1:
+              paths:
+                - 'app1/src/**'
+                - 'app1/package.json'
+                - 'app1/package-lock.json'
               paths_ignore:
                 - 'app1/README.md'
-              paths:
-                - 'app1/**'
             app2:
+              paths:
+                - 'app2/src/**'
+                - 'app2/package.json'
+                - 'app2/package-lock.json'
               paths_ignore:
                 - 'app2/README.md'
-              paths:
-                - 'app2/**'
           paths_ignore: '["**/README.md"]'
 
   buildApp1:
