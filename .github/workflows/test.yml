@@ -72,9 +72,6 @@ jobs:
       - cacheRepo
       - pre_job
     steps:
-      - run: echo "${{ needs.pre_job.outputs.should_skip }}"
-      - run: echo "${{ fromJSON(needs.pre_job.outputs.paths_result).app1.should_skip }}"
-      - run: echo "${{ fromJSON(needs.pre_job.outputs.paths_result).app2.should_skip }}"
       # Install Node - for `node` and `npm` commands
       - name: Setup Node.js
         uses: actions/setup-node@v3
@@ -112,10 +109,10 @@ jobs:
             ${{ runner.os }}-build-${{ env.cache-name }}-
 
       - name: Build App 1
-        if: ${{ steps.app-diff.outputs.any_changed == 'true' }}
         working-directory: "app1"
         run: |
           npm install
+          node src/app1.js
 
   buildApp2:
     name: Build App 2
@@ -128,9 +125,6 @@ jobs:
       - cacheRepo
       - pre_job
     steps:
-      - run: echo "${{ needs.pre_job.outputs.should_skip }}"
-      - run: echo "${{ fromJSON(needs.pre_job.outputs.paths_result).app1.should_skip }}"
-      - run: echo "${{ fromJSON(needs.pre_job.outputs.paths_result).app2.should_skip }}"
       # Install Node - for `node` and `npm` commands
       - name: Setup Node.js
         uses: actions/setup-node@v3
@@ -170,3 +164,4 @@ jobs:
         working-directory: "app2"
         run: |
           npm install
+          node src/app2.js

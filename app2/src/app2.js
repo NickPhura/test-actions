@@ -1,1 +1,3 @@
-const x = 12;
+const x = 'app2 log';
+
+console.log(x);
