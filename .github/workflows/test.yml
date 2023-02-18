@@ -67,7 +67,7 @@ jobs:
     name: Build App 1
     runs-on: ubuntu-latest
     # if: ${{ github.event.pull_request.merged == false && github.event.pull_request.draft == false }}
-    if: ${{ github.event.pull_request.merged == false && github.event.pull_request.draft == false && (needs.pre_job.outputs.should_skip != 'true' || !fromJSON(needs.pre_job.outputs.paths_result).app2.should_skip) }}
+    if: ${{ github.event.pull_request.merged == false && github.event.pull_request.draft == false && (needs.pre_job.outputs.should_skip != 'true' || !fromJSON(needs.pre_job.outputs.paths_result).app1.should_skip) }}
     env:
       PR_NUMBER: ${{ github.event.number }}
     needs:
@@ -96,10 +96,6 @@ jobs:
       - name: Checkout Target Branch
         if: steps.cache-repo.outputs.cache-hit != 'true'
         uses: actions/checkout@v3
-
-      - run: echo ${{ steps.app-diff.outputs }}
-
-      - run: echo '${{ steps.app-diff.outputs }}'
 
       # Cache Node modules
       - name: Cache node modules
