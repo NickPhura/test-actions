@@ -39,14 +39,41 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.sha }}
 
+  pre_job:
+    runs-on: ubuntu-latest
+    outputs:
+      should_skip: ${{ steps.skip_check.outputs.should_skip }}
+      paths_result: ${{ steps.skip_check.outputs.paths_result }}
+    steps:
+      - id: skip_check
+        uses: fkirc/skip-duplicate-actions@v5
+        with:
+          paths_filter: |
+            app1:
+              paths_ignore:
+                - 'app1/README.md'
+              paths:
+                - 'app1/**'
+            app2:
+              paths_ignore:
+                - 'app2/README.md'
+              paths:
+                - 'app2/**'
+          concurrent_skipping: "never"
+          skip_after_successful_duplicate: "true"
+          paths_ignore: '["**/README.md"]'
+          do_not_skip: '["pull_request", "workflow_dispatch", "schedule"]'
+
   buildApp1:
     name: Build App 1
     runs-on: ubuntu-latest
-    if: ${{ github.event.pull_request.merged == false && github.event.pull_request.draft == false }}
+    # if: ${{ github.event.pull_request.merged == false && github.event.pull_request.draft == false }}
+    if: ${{ github.event.pull_request.merged == false && github.event.pull_request.draft == false && (needs.pre_job.outputs.should_skip != 'true' || !fromJSON(needs.pre_job.outputs.paths_result).app2.should_skip) }}
     env:
       PR_NUMBER: ${{ github.event.number }}
     needs:
       - cacheRepo
+      - pre_job
     steps:
       # Install Node - for `node` and `npm` commands
       - name: Setup Node.js
@@ -70,24 +97,6 @@ jobs:
       - name: Checkout Target Branch
         if: steps.cache-repo.outputs.cache-hit != 'true'
         uses: actions/checkout@v3
-        with:
-          persist-credentials: false
-          fetch-depth: 2
-
-      - name: Get diff files
-        id: app-diff
-        uses: tj-actions/changed-files@v35
-        with:
-          repository: tj-actions/changed-files
-          files: |
-            src/**
-            server/**
-            public/**
-            .pipeline/**
-            package.json
-            package-lock.json
-            Dockerfile
-            tsconfig.json
 
       - run: echo ${{ steps.app-diff.outputs }}
 
@@ -115,12 +124,13 @@ jobs:
   buildApp2:
     name: Build App 2
     runs-on: ubuntu-latest
-    if: ${{ github.event.pull_request.merged == false && github.event.pull_request.draft == false }}
+    # if: ${{ github.event.pull_request.merged == false && github.event.pull_request.draft == false }}
+    if: ${{ github.event.pull_request.merged == false && github.event.pull_request.draft == false && (needs.pre_job.outputs.should_skip != 'true' || !fromJSON(needs.pre_job.outputs.paths_result).app2.should_skip) }}
     env:
       PR_NUMBER: ${{ github.event.number }}
     needs:
       - cacheRepo
-      - buildApp1
+      - pre_job
     steps:
       # Install Node - for `node` and `npm` commands
       - name: Setup Node.js
