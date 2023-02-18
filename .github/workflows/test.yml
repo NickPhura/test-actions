@@ -74,12 +74,12 @@ jobs:
       - uses: technote-space/get-diff-action@v4.0.1
         with:
           PATTERNS: |
-            subfolder/**
+            app1/subfolder/**
           FILES: |
-            package.json
-            package-lock.json
-          RELATIVE: 'app1'
-      - run: echo '${{ env.GIT_DIFF }}'
+            app1/package.json
+            app1/package-lock.json
+          SET_ENV_NAME: 'APP1_DIFF'
+      - run: echo '${{ env.APP1_DIFF }}'
 
       # Cache Node modules
       - name: Cache node modules
