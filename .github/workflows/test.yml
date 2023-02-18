@@ -71,20 +71,27 @@ jobs:
         if: steps.cache-repo.outputs.cache-hit != 'true'
         uses: actions/checkout@v3
 
-      - uses: technote-space/get-diff-action@v4.0.1
+      - name: Get diff files
+        id: app-diff
+        uses: tj-actions/changed-files@v35
         with:
-          PATTERNS: |
-            app1/subfolder/**
-          FILES: |
-            app1/package.json
-            app1/package-lock.json
-          SET_ENV_NAME: "APP_DIFF"
+          files: |
+            src/**
+            server/**
+            public/**
+            .pipeline/**
+            package.json
+            package-lock.json
+            Dockerfile
+            tsconfig.json
 
-      - run: echo ${{ env.APP_DIFF }}
+      - run: echo ${{ steps.app-diff.outputs }}
+
+      - run: echo '${{ steps.app-diff.outputs }}'
 
       # Cache Node modules
       - name: Cache node modules
-        if: ${{ env.APP_DIFF }}
+        if: steps.app-diff.outputs.any_changed == 'true'
         uses: actions/cache@v3
         env:
           cache-name: cache-node-modules
@@ -96,7 +103,7 @@ jobs:
             ${{ runner.os }}-build-${{ env.cache-name }}-
 
       - name: Build App 1
-        if: ${{ env.APP_DIFF }}
+        if: ${{ steps.app-diff.outputs.any_changed == 'true' }}
         working-directory: "app1"
         run: |
           npm install
