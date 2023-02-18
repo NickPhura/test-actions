@@ -78,6 +78,7 @@ jobs:
         id: app-diff
         uses: tj-actions/changed-files@v35
         with:
+          repository: tj-actions/changed-files
           files: |
             src/**
             server/**
