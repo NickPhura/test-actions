@@ -78,11 +78,13 @@ jobs:
           FILES: |
             app1/package.json
             app1/package-lock.json
-          SET_ENV_NAME: 'APP1_DIFF'
-      - run: echo '${{ env.APP1_DIFF }}'
+          SET_ENV_NAME: "APP_DIFF"
+
+      - run: echo ${{ env.APP_DIFF }}
 
       # Cache Node modules
       - name: Cache node modules
+        if: ${{ env.APP_DIFF }}
         uses: actions/cache@v3
         env:
           cache-name: cache-node-modules
@@ -94,6 +96,7 @@ jobs:
             ${{ runner.os }}-build-${{ env.cache-name }}-
 
       - name: Build App 1
+        if: ${{ env.APP_DIFF }}
         working-directory: "app1"
         run: |
           npm install
