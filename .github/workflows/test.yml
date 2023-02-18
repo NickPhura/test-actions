@@ -71,6 +71,16 @@ jobs:
         if: steps.cache-repo.outputs.cache-hit != 'true'
         uses: actions/checkout@v2
 
+      - uses: technote-space/get-diff-action@v6
+        with:
+          PATTERNS: |
+            subfolder/**
+          FILES: |
+            package.json
+            package-lock.json
+          RELATIVE: 'app1'
+      - run: echo '${{ env.GIT_DIFF }}' | jq
+
       # Cache Node modules
       - name: Cache node modules
         uses: actions/cache@v2
@@ -79,14 +89,14 @@ jobs:
         with:
           # npm cache files are stored in `~/.npm` on Linux/macOS
           path: ~/.npm
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('*/package-lock.json') }}
           restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+            ${{ runner.os }}-build-${{ env.cache-name }}-
 
       - name: Build App 1
         working-directory: "app1"
         run: |
-          npm install --only=production --loglevel verbose
+          npm install
 
   buildApp2:
     name: Build App 2
@@ -131,9 +141,9 @@ jobs:
           path: ~/.npm
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('*/package-lock.json') }}
           restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('*/package-lock.json') }}
+            ${{ runner.os }}-build-${{ env.cache-name }}-
 
       - name: Build App 2
         working-directory: "app2"
         run: |
-          npm install --only=production --loglevel verbose
+          npm install
