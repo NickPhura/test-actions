@@ -58,7 +58,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.sha }}
 
-  pre_job:
+  skipDuplicateActions:
     runs-on: ubuntu-latest
     outputs:
       should_skip: ${{ steps.skip_check.outputs.should_skip }}
@@ -91,24 +91,25 @@ jobs:
     timeout-minutes: 30
     if: ${{ github.event.pull_request.merged == false }}
     needs:
-      - pre_job
+      - skipDuplicateActions
     steps:
       - name: Print Env Vars
         run: |
-          echo 1: ${{ fromJSON(needs.skipDuplicateActions.outputs.paths_result.skipped_by.branch) }}
-          echo 2: ${{ fromJSON(needs.skipDuplicateActions.outputs.paths_result.skipped_by).branch }}
-          echo 3: ${{ fromJSON(needs.skipDuplicateActions.outputs.paths_result).skipped_by.branch }}
+          echo 1: ${{ fromJSON(needs.skipDuplicateActions.outputs.paths_result.app1.skipped_by.branch) }}
+          echo 2: ${{ fromJSON(needs.skipDuplicateActions.outputs.paths_result.app1.skipped_by).branch }}
+          echo 3: ${{ fromJSON(needs.skipDuplicateActions.outputs.paths_result.app1).skipped_by.branch }}
+          echo 4: ${{ fromJSON(needs.skipDuplicateActions.outputs.paths_result).app1.skipped_by.branch }}
 
   buildApp1:
     name: Build App 1
     runs-on: ubuntu-latest
     # if: ${{ github.event.pull_request.merged == false && github.event.pull_request.draft == false }}
-    if: ${{ github.event.pull_request.merged == false && github.event.pull_request.draft == false && !fromJSON(needs.pre_job.outputs.paths_result).app1.should_skip }}
+    if: ${{ github.event.pull_request.merged == false && github.event.pull_request.draft == false && !fromJSON(needs.skipDuplicateActions.outputs.paths_result).app1.should_skip }}
     env:
       PR_NUMBER: ${{ github.event.number }}
     needs:
       - cacheRepo
-      - pre_job
+      - skipDuplicateActions
     steps:
       # Install Node - for `node` and `npm` commands
       - name: Setup Node.js
@@ -156,12 +157,12 @@ jobs:
     name: Build App 2
     runs-on: ubuntu-latest
     # if: ${{ github.event.pull_request.merged == false && github.event.pull_request.draft == false }}
-    if: ${{ github.event.pull_request.merged == false && github.event.pull_request.draft == false && !fromJSON(needs.pre_job.outputs.paths_result).app2.should_skip }}
+    if: ${{ github.event.pull_request.merged == false && github.event.pull_request.draft == false && !fromJSON(needs.skipDuplicateActions.outputs.paths_result).app2.should_skip }}
     env:
       PR_NUMBER: ${{ github.event.number }}
     needs:
       - cacheRepo
-      - pre_job
+      - skipDuplicateActions
     steps:
       # Install Node - for `node` and `npm` commands
       - name: Setup Node.js
