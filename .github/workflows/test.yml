@@ -56,7 +56,7 @@ jobs:
               paths_ignore:
                 - 'app1/README.md'
                 - 'app1/**/*.test.js'
-              backtracking: false
+              backtracking: 'false'
             app2:
               paths:
                 - 'app2/src/**'
@@ -64,8 +64,9 @@ jobs:
               paths_ignore:
                 - 'app2/README.md'
                 - 'app2/**/*.test.js'
-              backtracking: false
+              backtracking: 'false'
           paths_ignore: '["**/README.md", "**/*.test.js"]'
+          backtracking: 'false'
 
   buildApp1:
     name: Build App 1
