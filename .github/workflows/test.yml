@@ -56,7 +56,7 @@ jobs:
                 - 'app1/package-lock.json'
               paths_ignore:
                 - 'app1/README.md'
-                - 'app1/**/*.test.ts'
+                - 'app1/**/*.test.js'
             app2:
               paths:
                 - 'app2/src/**'
@@ -64,7 +64,8 @@ jobs:
                 - 'app2/package-lock.json'
               paths_ignore:
                 - 'app2/README.md'
-          paths_ignore: '["**/README.md"]'
+                - 'app2/**/*.test.js'
+          paths_ignore: '["**/README.md", "**/*.test.js"]'
 
   buildApp1:
     name: Build App 1
