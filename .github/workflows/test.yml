@@ -96,7 +96,7 @@ jobs:
       - name: Print Env Vars
         run: |
           echo test1: ${{ fromJSON(needs.skipDuplicateActions.outputs.paths_result).app1 }}
-          echo test2: ${{ fromJSON(needs.skipDuplicateActions.outputs.paths_result).app1.should_skip }}
+          echo test3: ${{ fromJSON(needs.skipDuplicateActions.outputs.paths_result).app1.skipped_by.branch }}
 
   buildApp1:
     name: Build App 1
