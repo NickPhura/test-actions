@@ -1,1 +1,1 @@
-console.log('two.test.js');
+console.log('two-2.test.js');
