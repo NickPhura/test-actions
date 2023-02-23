@@ -107,6 +107,9 @@ jobs:
       - checkoutRepo
       - skipDuplicateActions
     steps:
+      - name: Fail
+        run: exit 1
+
       # Load repo from cache
       - name: Cache repo
         uses: actions/cache@v3
@@ -161,10 +164,81 @@ jobs:
         run: |
           DEBUG=* npm run build -- --pr=$PR_NUMBER
 
-  # Report the overall status of all deployments.
-  # Note: skipped jobs are considered successes, cancelled jobs are considered failures.
-  deploymentStatus:
-    name: Deployment Status
+  # Build the web frontend app image
+  buildAPP2:
+    name: Build APP2 Image
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    if: |
+      github.event.pull_request.merged == false && 
+      github.event.pull_request.draft == false && 
+      !(fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.should_skip && fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.skipped_by.branch == github.head_ref)
+    env:
+      PR_NUMBER: ${{ github.event.number }}
+      APP_NAME: "biohubbc-app"
+    needs:
+      - buildAPP
+    steps:
+      # Load repo from cache
+      - name: Cache repo
+        uses: actions/cache@v3
+        id: cache-repo
+        env:
+          cache-name: cache-repo
+        with:
+          path: ${{ github.workspace }}/*
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.sha }}
+
+      # Checkout the branch if not restored via cache
+      - name: Checkout Target Branch
+        if: steps.cache-repo.outputs.cache-hit != 'true'
+        uses: actions/checkout@v3
+
+      # Install Node - for `node` and `npm` commands
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 14
+          # cache-dependency-path: app/.pipeline/package-lock.json
+          # cache: "npm"
+
+      # Log in to OpenShift.
+      # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
+      # PR's must originate from a branch off the original repo or else all openshift `oc` commands will fail.
+      # - name: Log in to OpenShift
+      #   run: oc login --token=${{ secrets.TOOLS_SA_TOKEN }} --server=https://api.silver.devops.gov.bc.ca:6443
+
+      # Scale down any existing OpenShift pods for this PR deployment
+      # Why? The new pods will be deployed before the existing pods are terminated, and twice the resources will be needed
+      # in that moment. If not enough resources are available to spin up the new pods, then they may fail to deploy.
+      # - name: Scale down app pods
+      #   run: |
+      #     oc project af2668-dev
+      #     oc get deploymentconfig --selector env-id=$PR_NUMBER,app-name=$APP_NAME -o name | awk '{print "oc scale --replicas=0  " $1}' | bash
+
+      # Install app pipeline node modules
+      # Note: This already caches node modules internally
+      - name: Install pipeline node modules
+        working-directory: app/.pipeline/
+        run: npm ci
+      # - name: Install app pipeline node modules
+      #   uses: bahmutov/npm-install@v1
+      #   with:
+      #     working-directory: app/.pipeline/
+      #     useRollingCache: true
+
+      # Build the app image
+      - name: Build APP Image
+        working-directory: app/.pipeline/
+        run: |
+          DEBUG=* npm run build -- --pr=$PR_NUMBER
+
+  # Report the overall status of all jobs.
+  # Why? Skipped jobs are not considered successes when specifying requird jobs in the GitHub PR settings. Rather than
+  # specify each job, we can specify this final job only, and use its status as an indicator of all previous jobs
+  # having successfully run. We can then manually include the 'skipped' status as part our definition of success.
+  workflowStatus:
+    name: Workflow Status
     runs-on: ubuntu-latest
     timeout-minutes: 30
     if: |
@@ -172,11 +246,19 @@ jobs:
       github.event.pull_request.merged == false && 
       github.event.pull_request.draft == false
     needs:
+      - checkEnv
+      - skipDuplicateActions
+      - checkoutRepo
       - buildAPP
+      - buildAPP2
     steps:
       - name: Log result
         run: |
+          echo needs.checkEnv.result: ${{ needs.checkEnv.result }}
+          echo needs.skipDuplicateActions.result: ${{ needs.skipDuplicateActions.result }}
+          echo needs.checkoutRepo.result: ${{ needs.checkoutRepo.result }}
           echo needs.buildAPP.result: ${{ needs.buildAPP.result }}
+          echo needs.buildAPP2.result: ${{ needs.buildAPP2.result }}
 
       - name: Report success
         if: |
