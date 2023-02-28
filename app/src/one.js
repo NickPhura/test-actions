@@ -1,1 +1,1 @@
-console.log('one-2.js');
+console.log('app one.js');

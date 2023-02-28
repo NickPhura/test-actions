@@ -54,6 +54,14 @@ jobs:
               paths_ignore:
                 - 'app/src/**/*.test.ts'
                 - 'app/**.md'
+            app2:
+              paths:
+                - 'app2/src/**'
+                - 'app2/package*.json'
+                - 'app2/.pipeline/**'
+              paths_ignore:
+                - 'app2/src/**/*.test.ts'
+                - 'app2/**.md'
 
   # Checkout the repo once and cache it for use in subsequent jobs
   checkoutRepo:
