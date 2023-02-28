@@ -148,6 +148,14 @@ jobs:
         run: |
           DEBUG=* npm run build -- --pr=$PR_NUMBER
 
+      - name: Cache App Success
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-deploy-build-app-pr
+        with:
+          # path: ~/.npm
+          key: deploy-build-app-pr-$PR_NUMBER
+
   # Build the web frontend app image
   buildAPP2:
     name: Build APP2 Image
