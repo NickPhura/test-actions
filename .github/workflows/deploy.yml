@@ -80,7 +80,7 @@ jobs:
         id: commit_message
         run: |
           echo "message=$(git show -s --format=%s)" >> $GITHUB_OUTPUT
-          echo "ignore_skip=${{ contains($message, 'ignore-skip') }}" >> $GITHUB_OUTPUT
+          echo "ignore_skip=${{ contains($(git show -s --format=%s), 'ignore-skip') }}" >> $GITHUB_OUTPUT
 
   checkEnv2:
     name: Print Env variables2
