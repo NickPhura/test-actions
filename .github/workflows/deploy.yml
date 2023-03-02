@@ -113,7 +113,7 @@ jobs:
         with:
           node-version: 14
 
-  # Build the web frontend app image
+  # Build the web frontend app images
   buildAPP:
     name: Build APP Image
     runs-on: ubuntu-latest
