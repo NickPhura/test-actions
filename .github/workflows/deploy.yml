@@ -46,8 +46,7 @@ jobs:
     outputs:
       should_skip: ${{ steps.skip_check.outputs.should_skip }}
       paths_result: ${{ steps.skip_check.outputs.paths_result }}
-      message: ${{ steps.commit_message.outputs.message }}
-      ignore_skip: ${{ steps.commit_message.outputs.ignore_skip }}
+      message: ${{ contains(steps.commit_message.outputs.message, 'ignore-skip') }}
     steps:
       - id: skip_check
         uses: fkirc/skip-duplicate-actions@v5
@@ -78,11 +77,7 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha }}
       - name: Get head commit message
         id: commit_message
-        run: |
-          echo "message=$(git show -s --format=%s)" >> $GITHUB_OUTPUT
-          # echo message: $message
-          echo message: ${{ git show -s --format=%s }}
-          # echo "ignore_skip=$(contains($(git show -s --format=%s), 'ignore-skip'))" >> $GITHUB_OUTPUT
+        run: echo "message=$(git show -s --format=%s)" >> $GITHUB_OUTPUT
 
   checkEnv2:
     name: Print Env variables2
@@ -95,8 +90,7 @@ jobs:
       - name: Print Env Vars 2
         run: |
           echo skip message: ${{ needs.skipDuplicateActions.outputs.message }}
-          echo skip ignore: ${{ needs.skipDuplicateActions.outputs.ignore_skip }}
-          # echo skip ignore: ${{ contains(needs.skipDuplicateActions.outputs.ignore_skip, 'ignore-skip') }}
+          # echo skip ignore: ${{ contains(needs.skipDuplicateActions.outputs.message, 'ignore-skip') }}
 
   # Checkout the repo once and cache it for use in subsequent jobs
   checkoutRepo:
