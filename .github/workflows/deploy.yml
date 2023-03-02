@@ -78,6 +78,7 @@ jobs:
         id: commit_message
         run: |
           echo "$(git show -s --format=%s)"
+          echo "contains($(git show -s --format=%s), 'ignore-skip')"
           echo "::setOutput message={data}::$(git show -s --format=%s)"
 
   # Checkout the repo once and cache it for use in subsequent jobs
