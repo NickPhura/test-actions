@@ -18,14 +18,9 @@ jobs:
     timeout-minutes: 20
     if: ${{ github.event.pull_request.merged == false }}
     steps:
-      - name: get-pr-commits
-        uses: tim-actions/get-pr-commits@v1.2.0
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: print-pr-commits
+      - name: Print head git commit message
         run: |
-          echo pr commits: ${{ steps.get-pr-commits.outputs.commits }}
+          echo "$(git show -s --format=%s)" 
 
       # - name: GS Commit Message Checker
       #   uses: GsActions/commit-message-checker@v2.0.0
