@@ -174,8 +174,9 @@ jobs:
     env:
       PR_NUMBER: ${{ github.event.number }}
       APP_NAME: "biohubbc-app"
-    # needs:
-    #   - buildAPP
+    needs:
+      - checkoutRepo
+      - skipDuplicateActions
     steps:
       # Load repo from cache
       - name: Cache repo
