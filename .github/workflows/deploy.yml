@@ -41,9 +41,13 @@ jobs:
     needs:
       - checkEnv
     outputs:
-      should_skip: ${{ steps.skip_check.outputs.should_skip }}
-      paths_result: ${{ steps.skip_check.outputs.paths_result }}
+      should_skip: ${{ steps.skip_check.outputs.should_skip && contains(steps.pr-labels.outputs.labels, 'disable-skipDuplicateActions ') }}
+      paths_result: ${{ steps.skip_check.outputs.paths_result && contains(steps.pr-labels.outputs.labels, 'disable-skipDuplicateActions ') }}
     steps:
+      - name: Get PR labels
+        id: pr-labels
+        uses: joerick/pr-labels-action@v1.0.7
+
       - id: skip_check
         uses: fkirc/skip-duplicate-actions@v5
         with:
@@ -64,7 +68,6 @@ jobs:
               paths_ignore:
                 - 'app2/src/**/*.test.ts'
                 - 'app2/**.md'
-          skip_after_successful_duplicate: false
 
   # Checkout the repo once and cache it for use in subsequent jobs
   checkoutRepo:
