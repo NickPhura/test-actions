@@ -18,7 +18,7 @@ jobs:
     timeout-minutes: 20
     if: ${{ github.event.pull_request.merged == false }}
     env:
-      LABELS: fromJSON(github.event.issue.labels)
+      LABELS: ${{ fromJSON(github.event.issue.labels) }}
     steps:
       - name: Print Env Vars
         run: |
