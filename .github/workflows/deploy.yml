@@ -64,7 +64,7 @@ jobs:
               paths_ignore:
                 - 'app2/src/**/*.test.ts'
                 - 'app2/**.md'
-          skip_after_successful_duplicate: true
+          skip_after_successful_duplicate: false
 
   # Checkout the repo once and cache it for use in subsequent jobs
   checkoutRepo:
@@ -159,10 +159,10 @@ jobs:
     if: |
       github.event.pull_request.merged == false && 
       github.event.pull_request.draft == false && 
-      !(fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.should_skip && fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.skipped_by.branch == github.head_ref)
+      !(fromJSON(needs.skipDuplicateActions.outputs.paths_result).app2.should_skip && fromJSON(needs.skipDuplicateActions.outputs.paths_result).app2.skipped_by.branch == github.head_ref)
     env:
       PR_NUMBER: ${{ github.event.number }}
-      APP_NAME: "biohubbc-app"
+      APP_NAME: "biohubbc-app2"
     needs:
       - buildAPP
     steps:
@@ -187,15 +187,15 @@ jobs:
         with:
           node-version: 14
 
-      # Install app pipeline node modules
+      # Install app2 pipeline node modules
       # Note: This already caches node modules internally
       - name: Install pipeline node modules
-        working-directory: app/.pipeline/
+        working-directory: app2/.pipeline/
         run: npm ci
 
       # Build the app image
-      - name: Build APP Image
-        working-directory: app/.pipeline/
+      - name: Build APP2 Image
+        working-directory: app2/.pipeline/
         run: |
           DEBUG=* npm run build -- --pr=$PR_NUMBER
 
