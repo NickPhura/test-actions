@@ -55,8 +55,12 @@ jobs:
       - checkoutRepo
     env:
       COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
-      COMMIT_MESSAGE2: ${{ toJSON(github.event.head_commit) }}
+      COMMIT_MESSAGE2: ${{ toJSON(github }}
     steps:
+      - name: Dump GitHub context
+        id: github_context_step
+        run: echo '${{ toJSON(github) }}'
+
       - name: Print Env Vars
         run: |
           echo OC CLI Version: $(oc version)
