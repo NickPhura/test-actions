@@ -46,8 +46,9 @@ jobs:
     outputs:
       should_skip: ${{ steps.skip_check.outputs.should_skip }}
       paths_result: ${{ steps.skip_check.outputs.paths_result }}
-      message: ${{ steps.commit_message.outputs.message }}
+      commit_message: ${{ steps.commit_message.outputs.message }}
       ignore_skip: ${{ steps.commit_message.outputs.ignore }}
+      ignore_skip2: ${{ steps.commit_message.outputs.ignore2 }}
     steps:
       - id: skip_check
         uses: fkirc/skip-duplicate-actions@v5
@@ -77,12 +78,9 @@ jobs:
 
       - name: Get head commit message
         id: commit_message
-        run: |
-          echo "$(git show -s --format=%s)"
-          echo "contains($(git show -s --format=%s), 'ignore-skip')"
-          echo "::setOutput message={data}::contains($(git show -s --format=%s), 'ignore-skip')"
-          echo "message=$(git show -s --format=%s)" >> $GITHUB_OUTPUT
-          echo "ignore=contains($(git show -s --format=%s), 'ignore-skip')" >> $GITHUB_OUTPUT
+        run: echo "commit_message=$(git show -s --format=%s)" >> $GITHUB_OUTPUT
+        run: echo "ignore=contains($(git show -s --format=%s), 'ignore-skip')" >> $GITHUB_OUTPUT
+        run: echo "ignore2=$(contains($(git show -s --format=%s), 'ignore-skip'))" >> $GITHUB_OUTPUT
 
   checkEnv2:
     name: Print Env variables2
@@ -94,8 +92,10 @@ jobs:
     steps:
       - name: Print Env Vars 2
         run: |
-          echo skip message: ${{ needs.skipDuplicateActions.outputs.message }}
-          echo skip ignore: ${{ contains(needs.skipDuplicateActions.outputs.ignore_skip, 'ignore-skip') }}
+          echo skip message: ${{ needs.skipDuplicateActions.outputs.commit_message }}
+          echo skip ignore: ${{ needs.skipDuplicateActions.outputs.ignore_skip }}
+          echo skip ignore2: ${{ needs.skipDuplicateActions.outputs.ignore_skip2 }}
+          echo skip ignore: ${{ contains(needs.skipDuplicateActions.outputs.commit_message, 'ignore-skip') }}
 
   # Checkout the repo once and cache it for use in subsequent jobs
   checkoutRepo:
