@@ -164,9 +164,6 @@ jobs:
     needs:
       - buildAPP
     steps:
-      - name: Fail
-        run: exit 1
-
       # Load repo from cache
       - name: Cache repo
         uses: actions/cache@v3
