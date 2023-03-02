@@ -17,6 +17,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     if: ${{ github.event.pull_request.merged == false }}
+    env:
+      LABELS: fromJSON(github.event.issue.labels)
     steps:
       - name: Print Env Vars
         run: |
@@ -29,10 +31,7 @@ jobs:
           echo Git Branch Ref: ${{ github.head_ref }}
           echo Git Labels: "$LABELS"
           echo Git Labels: $LABELS
-          echo Git Labels: ${{ github.event.issue.labels }}
-          echo Git Labels: fromJSON(github.event)
-          echo Git Labels: fromJSON(github.event.issue)
-          echo Git Labels: fromJSON(github.event.issue.labels)
+          echo Git Labels: ${{ LABELS }}
           echo PR in Draft: ${{ github.event.pull_request.draft }}
 
   # Scans the commit against past commits, and determines if any jobs are skippable (due to no changes in target files).
