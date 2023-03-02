@@ -115,7 +115,7 @@ jobs:
     if: |
       github.event.pull_request.merged == false && 
       github.event.pull_request.draft == false && 
-      !(!needs.skipDuplicateActions.outputs && fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.should_skip && fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.skipped_by.branch == github.head_ref)
+      !(!needs.skipDuplicateActions.outputs.disable_skip && fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.should_skip && fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.skipped_by.branch == github.head_ref)
     env:
       PR_NUMBER: ${{ github.event.number }}
       APP_NAME: "biohubbc-app"
@@ -164,7 +164,7 @@ jobs:
     if: |
       github.event.pull_request.merged == false && 
       github.event.pull_request.draft == false && 
-      !(!needs.skipDuplicateActions.outputs && fromJSON(needs.skipDuplicateActions.outputs.paths_result).app2.should_skip && fromJSON(needs.skipDuplicateActions.outputs.paths_result).app2.skipped_by.branch == github.head_ref)
+      !(!needs.skipDuplicateActions.outputs.disable_skip && fromJSON(needs.skipDuplicateActions.outputs.paths_result).app2.should_skip && fromJSON(needs.skipDuplicateActions.outputs.paths_result).app2.skipped_by.branch == github.head_ref)
     env:
       PR_NUMBER: ${{ github.event.number }}
       APP_NAME: "biohubbc-app2"
