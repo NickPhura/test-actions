@@ -41,12 +41,12 @@ jobs:
     needs:
       - checkEnv
     outputs:
-      should_skip: ${{ steps.skip_check.outputs.should_skip && contains(steps.pr-labels.outputs.labels, 'disable-skipDuplicateActions ') }}
-      paths_result: ${{ steps.skip_check.outputs.paths_result && contains(steps.pr-labels.outputs.labels, 'disable-skipDuplicateActions ') }}
+      should_skip: ${{ steps.skip_check.outputs.should_skip }}
+      paths_result: ${{ steps.skip_check.outputs.paths_result }}
+      disable_skip: ${{ contains(steps.get_labels.outputs.result, 'disable-skipDuplicateActions') }}
     steps:
-      - name: Get PR labels
-        id: pr-labels
-        uses: joerick/pr-labels-action@v1.0.7
+      - id: get_labels
+        uses: ruben-baez-mojix-com/git-labels@v0.0.4
 
       - id: skip_check
         uses: fkirc/skip-duplicate-actions@v5
@@ -113,7 +113,7 @@ jobs:
     if: |
       github.event.pull_request.merged == false && 
       github.event.pull_request.draft == false && 
-      !(fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.should_skip && fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.skipped_by.branch == github.head_ref)
+      !(!needs.skipDuplicateActions.outputs && fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.should_skip && fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.skipped_by.branch == github.head_ref)
     env:
       PR_NUMBER: ${{ github.event.number }}
       APP_NAME: "biohubbc-app"
@@ -162,7 +162,7 @@ jobs:
     if: |
       github.event.pull_request.merged == false && 
       github.event.pull_request.draft == false && 
-      !(fromJSON(needs.skipDuplicateActions.outputs.paths_result).app2.should_skip && fromJSON(needs.skipDuplicateActions.outputs.paths_result).app2.skipped_by.branch == github.head_ref)
+      !(!needs.skipDuplicateActions.outputs && fromJSON(needs.skipDuplicateActions.outputs.paths_result).app2.should_skip && fromJSON(needs.skipDuplicateActions.outputs.paths_result).app2.skipped_by.branch == github.head_ref)
     env:
       PR_NUMBER: ${{ github.event.number }}
       APP_NAME: "biohubbc-app2"
