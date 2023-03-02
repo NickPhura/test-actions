@@ -85,36 +85,12 @@ jobs:
     needs:
       - skipDuplicateActions
     steps:
-      - name: Print Env Vars
+      - name: Print Env Vars 2
         run: |
           echo ignore: ${{ needs.skipDuplicateActions.outputs.ignore_skip }}
           echo ignore: ${{ !needs.skipDuplicateActions.outputs.ignore_skip }}
-          echo ignore: ${{ needs.skipDuplicateActions.outputs.ignore_skip == 'true' }}
-          echo ignore: ${{ needs.skipDuplicateActions.outputs.ignore_skip == 'false' }}
-
-  checkEnv3:
-    name: Print Env variables
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-    if: ${{ needs.skipDuplicateActions.outputs.ignore_skip }}
-    needs:
-      - skipDuplicateActions
-    steps:
-      - name: Print Env Vars
-        run: |
-          echo ignore: ${{ needs.skipDuplicateActions.outputs.ignore_skip }}
-
-  checkEnv4:
-    name: Print Env variables
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-    if: ${{ !needs.skipDuplicateActions.outputs.ignore_skip }}
-    needs:
-      - skipDuplicateActions
-    steps:
-      - name: Print Env Vars
-        run: |
-          echo ignore: ${{ needs.skipDuplicateActions.outputs.ignore_skip }}
+          echo ignore: ${{ !(needs.skipDuplicateActions.outputs.ignore_skip && fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.should_skip && fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.skipped_by.branch == github.head_ref) }}
+          echo ignore: ${{ !(!needs.skipDuplicateActions.outputs.ignore_skip && fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.should_skip && fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.skipped_by.branch == github.head_ref) }}
 
   # Checkout the repo once and cache it for use in subsequent jobs
   checkoutRepo:
@@ -160,7 +136,7 @@ jobs:
     if: |
       github.event.pull_request.merged == false && 
       github.event.pull_request.draft == false && 
-      !(needs.skipDuplicateActions.outputs.ignore_skip && fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.should_skip && fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.skipped_by.branch == github.head_ref)
+      !(!needs.skipDuplicateActions.outputs.ignore_skip && fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.should_skip && fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.skipped_by.branch == github.head_ref)
     env:
       PR_NUMBER: ${{ github.event.number }}
       APP_NAME: "biohubbc-app"
