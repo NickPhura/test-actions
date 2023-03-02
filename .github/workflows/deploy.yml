@@ -29,6 +29,7 @@ jobs:
           echo Git Branch Ref: ${{ github.head_ref }}
           echo Git Issue Labels: ${{ toJSON(github.event.issue.labels.*.name) }}
           echo Git Event Labels: ${{ toJSON(github.event.label.*) }}
+          echo Git Commit Message: ${{ github.event.commits.*.message }}
           echo PR in Draft: ${{ github.event.pull_request.draft }}
 
   # Scans the commit against past commits, and determines if any jobs are skippable (due to no changes in target files).
@@ -43,13 +44,7 @@ jobs:
     outputs:
       should_skip: ${{ steps.skip_check.outputs.should_skip }}
       paths_result: ${{ steps.skip_check.outputs.paths_result }}
-      disable_skip: ${{ contains(steps.get_labels.outputs.result, 'disable-skipDuplicateActions') }}
     steps:
-      - id: get_labels
-        uses: ruben-baez-mojix-com/git-labels@v0.0.4
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-
       - id: skip_check
         uses: fkirc/skip-duplicate-actions@v5
         with:
@@ -115,7 +110,7 @@ jobs:
     if: |
       github.event.pull_request.merged == false && 
       github.event.pull_request.draft == false && 
-      !(!needs.skipDuplicateActions.outputs.disable_skip && fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.should_skip && fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.skipped_by.branch == github.head_ref)
+      !(fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.should_skip && fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.skipped_by.branch == github.head_ref)
     env:
       PR_NUMBER: ${{ github.event.number }}
       APP_NAME: "biohubbc-app"
@@ -164,10 +159,10 @@ jobs:
     if: |
       github.event.pull_request.merged == false && 
       github.event.pull_request.draft == false && 
-      !(!needs.skipDuplicateActions.outputs.disable_skip && fromJSON(needs.skipDuplicateActions.outputs.paths_result).app2.should_skip && fromJSON(needs.skipDuplicateActions.outputs.paths_result).app2.skipped_by.branch == github.head_ref)
+      !(fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.should_skip && fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.skipped_by.branch == github.head_ref)
     env:
       PR_NUMBER: ${{ github.event.number }}
-      APP_NAME: "biohubbc-app2"
+      APP_NAME: "biohubbc-app"
     needs:
       - buildAPP
     steps:
@@ -192,15 +187,15 @@ jobs:
         with:
           node-version: 14
 
-      # Install app2 pipeline node modules
+      # Install app pipeline node modules
       # Note: This already caches node modules internally
       - name: Install pipeline node modules
-        working-directory: app2/.pipeline/
+        working-directory: app/.pipeline/
         run: npm ci
 
       # Build the app image
-      - name: Build APP2 Image
-        working-directory: app2/.pipeline/
+      - name: Build APP Image
+        working-directory: app/.pipeline/
         run: |
           DEBUG=* npm run build -- --pr=$PR_NUMBER
 
