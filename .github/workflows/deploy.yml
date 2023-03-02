@@ -31,6 +31,7 @@ jobs:
           echo Git Event Labels: ${{ toJSON(github.event.label.*) }}
           echo Git Commit Message: ${{ toJSON(github.event.commits.*.message) }}
           echo Git Commit Message: ${{ github.event.workflow_run.head_commit.message }}
+          echo Git Commit Message: ${{ github.event.head_commit.message }}
           echo PR in Draft: ${{ github.event.pull_request.draft }}
 
   # Scans the commit against past commits, and determines if any jobs are skippable (due to no changes in target files).
