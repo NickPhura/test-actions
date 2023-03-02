@@ -60,6 +60,7 @@ jobs:
     outputs:
       should_skip: ${{ steps.skip_check.outputs.should_skip }}
       paths_result: ${{ steps.skip_check.outputs.paths_result }}
+      ignore_skip: ${{ steps.commit_message.outputs.message }}
     steps:
       - id: skip_check
         uses: fkirc/skip-duplicate-actions@v5
@@ -82,9 +83,10 @@ jobs:
                 - 'app2/src/**/*.test.ts'
                 - 'app2/**.md'
 
-      - name: Print head git commit message
+      - id: commit_message
         run: |
           echo "$(git show -s --format=%s)"
+          echo "::setOutput message={data}::$(git show -s --format=%s)"
 
   # Checkout the repo once and cache it for use in subsequent jobs
   checkoutRepo:
