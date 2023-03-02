@@ -6,6 +6,11 @@ on:
   pull_request:
     types: [opened, reopened, synchronize, ready_for_review]
   workflow_dispatch:
+    inputs:
+      test:
+        description: "Test"
+        required: FALSE
+        default: "Test"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.number }}
