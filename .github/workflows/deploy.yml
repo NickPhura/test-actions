@@ -18,9 +18,13 @@ jobs:
     timeout-minutes: 20
     if: ${{ github.event.pull_request.merged == false }}
     steps:
+      - name: Get repo
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
       - name: Print head git commit message
         run: |
-          echo "$(git show -s --format=%s)" 
+          echo "$(git show -s --format=%s)"
 
       # - name: GS Commit Message Checker
       #   uses: GsActions/commit-message-checker@v2.0.0
