@@ -12,61 +12,26 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  # Checkout the repo once and cache it for use in subsequent jobs
-  checkoutRepo:
-    name: Checkout and cache target branch
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-    if: |
-      github.event.pull_request.merged == false && 
-      github.event.pull_request.draft == false
-    env:
-      PR_NUMBER: ${{ github.event.number }}
-    steps:
-      - name: Checkout Target Branch
-        uses: actions/checkout@v3
-        with:
-          persist-credentials: false
-
-      # Cache the repo
-      - name: Cache repo
-        uses: actions/cache@v3
-        id: cache-repo
-        env:
-          cache-name: cache-repo
-        with:
-          # Cache repo based on the commit sha that triggered the workflow
-          path: ${{ github.workspace }}/*
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.sha }}
-
-      # Install Node - for `node` and `npm` commands
-      # Note: This already uses actions/cache internally, so repeat calls in subsequent jobs are not a performance hit
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 14
-
   checkEnv:
     name: Print Env variables
     runs-on: ubuntu-latest
     timeout-minutes: 20
     if: ${{ github.event.pull_request.merged == false }}
-    needs:
-      - checkoutRepo
     steps:
-      - name: Dump GitHub context
-        id: github_context_step
-        run: echo '${{ toJSON(github) }}'
-      - name: Dump job context
-        run: echo '${{ toJSON(job) }}'
-      - name: Dump steps context
-        run: echo '${{ toJSON(steps) }}'
-      - name: Dump runner context
-        run: echo '${{ toJSON(runner) }}'
-      - name: Dump strategy context
-        run: echo '${{ toJSON(strategy) }}'
-      - name: Dump matrix context
-        run: echo '${{ toJSON(matrix) }}'
+      - name: get-pr-commits
+        uses: tim-actions/get-pr-commits@v1.2.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: print-pr-commits
+        run: |
+          echo pr commits: ${{ steps.get-pr-commits.outputs.commits }}
+
+      - name: GS Commit Message Checker
+        uses: GsActions/commit-message-checker@v2.0.0
+        with:
+          pattern: '.*ignore-skip.*'
+            accessToken: ${{ secrets.GITHUB_TOKEN }} # github access token is only required if checkAllCommitMessages is true
 
       - name: Print Env Vars
         run: |
@@ -79,6 +44,9 @@ jobs:
           echo Git Branch Ref: ${{ github.head_ref }}
           echo Git Issue Labels: ${{ toJSON(github.event.issue.labels.*.name) }}
           echo Git Event Labels: ${{ toJSON(github.event.label.*) }}
+          echo Git Commit Message: ${{ toJSON(github.event.commits.*.message) }}
+          echo Git Commit Message: ${{ github.event.workflow_run.head_commit.message }}
+          echo Git Commit Message: ${{ github.event.head_commit.message }}
           echo PR in Draft: ${{ github.event.pull_request.draft }}
 
   # Scans the commit against past commits, and determines if any jobs are skippable (due to no changes in target files).
@@ -89,7 +57,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     needs:
-      - checkoutRepo
+      - checkEnv
     outputs:
       should_skip: ${{ steps.skip_check.outputs.should_skip }}
       paths_result: ${{ steps.skip_check.outputs.paths_result }}
@@ -114,6 +82,42 @@ jobs:
               paths_ignore:
                 - 'app2/src/**/*.test.ts'
                 - 'app2/**.md'
+
+  # Checkout the repo once and cache it for use in subsequent jobs
+  checkoutRepo:
+    name: Checkout and cache target branch
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    if: |
+      github.event.pull_request.merged == false && 
+      github.event.pull_request.draft == false
+    env:
+      PR_NUMBER: ${{ github.event.number }}
+    needs:
+      - skipDuplicateActions
+    steps:
+      - name: Checkout Target Branch
+        uses: actions/checkout@v3
+        with:
+          persist-credentials: false
+
+      # Cache the repo
+      - name: Cache repo
+        uses: actions/cache@v3
+        id: cache-repo
+        env:
+          cache-name: cache-repo
+        with:
+          # Cache repo based on the commit sha that triggered the workflow
+          path: ${{ github.workspace }}/*
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.sha }}
+
+      # Install Node - for `node` and `npm` commands
+      # Note: This already uses actions/cache internally, so repeat calls in subsequent jobs are not a performance hit
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 14
 
   # Build the web frontend app image
   buildAPP:
