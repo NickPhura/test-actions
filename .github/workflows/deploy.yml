@@ -34,6 +34,8 @@ jobs:
           echo Git Labels: ${{ toJSON(github.event.issue.labels.*.name) }}
           echo Git Labels: $LABELS2
           echo Git Labels: ${{ toJSON(github.event.label.*) }}
+          echo Git Labels: ${{ github.event.label }}
+          echo Git Labels: ${{ github.event.label.* }}
           echo PR in Draft: ${{ github.event.pull_request.draft }}
 
   # Scans the commit against past commits, and determines if any jobs are skippable (due to no changes in target files).
