@@ -53,9 +53,6 @@ jobs:
     if: ${{ github.event.pull_request.merged == false }}
     needs:
       - checkoutRepo
-    env:
-      COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
-      COMMIT_MESSAGE2: ${{ toJSON(github }}
     steps:
       - name: Dump GitHub context
         id: github_context_step
@@ -72,11 +69,6 @@ jobs:
           echo Git Branch Ref: ${{ github.head_ref }}
           echo Git Issue Labels: ${{ toJSON(github.event.issue.labels.*.name) }}
           echo Git Event Labels: ${{ toJSON(github.event.label.*) }}
-          echo Git Commit Message: ${{ toJSON(github.event.commits.*.message) }}
-          echo Git Commit Message: ${{ github.event.workflow_run.head_commit.message }}
-          echo Git Commit Message: ${{ github.event.head_commit.message }}
-          echo Git Commit Message: $COMMIT_MESSAGE
-          echo Git Commit Message: $COMMIT_MESSAGE2
           echo PR in Draft: ${{ github.event.pull_request.draft }}
 
   # Scans the commit against past commits, and determines if any jobs are skippable (due to no changes in target files).
