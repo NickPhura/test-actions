@@ -46,7 +46,8 @@ jobs:
     outputs:
       should_skip: ${{ steps.skip_check.outputs.should_skip }}
       paths_result: ${{ steps.skip_check.outputs.paths_result }}
-      ignore_skip: ${{ steps.commit_message.outputs.message }}
+      message: ${{ steps.commit_message.outputs.message }}
+      ignore_skip: ${{ steps.commit_message.outputs.ignore }}
     steps:
       - id: skip_check
         uses: fkirc/skip-duplicate-actions@v5
@@ -80,6 +81,8 @@ jobs:
           echo "$(git show -s --format=%s)"
           echo "contains($(git show -s --format=%s), 'ignore-skip')"
           echo "::setOutput message={data}::contains($(git show -s --format=%s), 'ignore-skip')"
+          echo "message=$(git show -s --format=%s)" >> $GITHUB_OUTPUT
+          echo "ignore=contains($(git show -s --format=%s), 'ignore-skip')" >> $GITHUB_OUTPUT
 
   checkEnv2:
     name: Print Env variables2
@@ -91,6 +94,7 @@ jobs:
     steps:
       - name: Print Env Vars 2
         run: |
+          echo skip message: ${{ needs.skipDuplicateActions.outputs.message }}
           echo skip ignore: ${{ needs.skipDuplicateActions.outputs.ignore_skip }}
 
   # Checkout the repo once and cache it for use in subsequent jobs
