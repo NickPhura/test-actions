@@ -31,7 +31,6 @@ jobs:
           echo Git Branch Ref: ${{ github.head_ref }}
           echo Git Labels: "$LABELS"
           echo Git Labels: $LABELS
-          echo Git Labels: ${{ LABELS }}
           echo PR in Draft: ${{ github.event.pull_request.draft }}
 
   # Scans the commit against past commits, and determines if any jobs are skippable (due to no changes in target files).
