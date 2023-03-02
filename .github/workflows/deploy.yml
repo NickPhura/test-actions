@@ -95,7 +95,7 @@ jobs:
       - name: Print Env Vars 2
         run: |
           echo skip message: ${{ needs.skipDuplicateActions.outputs.message }}
-          echo skip ignore: ${{ needs.skipDuplicateActions.outputs.ignore_skip }}
+          echo skip ignore: ${{ contains(needs.skipDuplicateActions.outputs.ignore_skip, 'ignore-skip') }}
 
   # Checkout the repo once and cache it for use in subsequent jobs
   checkoutRepo:
