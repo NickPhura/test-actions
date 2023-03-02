@@ -81,7 +81,7 @@ jobs:
         run: |
           echo "message=$(git show -s --format=%s)" >> $GITHUB_OUTPUT
           # echo message: $message
-          echo message: ${{ $(git show -s --format=%s) }}
+          echo message: ${{ git show -s --format=%s }}
           # echo "ignore_skip=$(contains($(git show -s --format=%s), 'ignore-skip'))" >> $GITHUB_OUTPUT
 
   checkEnv2:
