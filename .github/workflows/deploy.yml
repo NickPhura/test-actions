@@ -89,6 +89,8 @@ jobs:
       - name: Print Env Vars 2
         run: |
           echo skip-ignore: ${{ needs.skipDuplicateActions.outputs.ignore_skip }}
+          echo app.should_skip: ${{ fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.should_skip }}
+          echo app.should_skip ref: ${{ !(fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.should_skip && fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.skipped_by.branch == github.head_ref) }}
           echo if and: ${{ github.event.pull_request.merged == false && github.event.pull_request.draft == false && !(!needs.skipDuplicateActions.outputs.ignore_skip && fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.should_skip && fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.skipped_by.branch == github.head_ref) }}
           echo if or: ${{ github.event.pull_request.merged == false && github.event.pull_request.draft == false && (needs.skipDuplicateActions.outputs.ignore_skip || !(fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.should_skip && fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.skipped_by.branch == github.head_ref)) }}
 
