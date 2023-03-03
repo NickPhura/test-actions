@@ -88,9 +88,9 @@ jobs:
     steps:
       - name: Print Env Vars 2
         run: |
-          echo ignore: ${{ needs.skipDuplicateActions.outputs.ignore_skip }}
-          echo ignore: ${{ github.event.pull_request.merged == false && github.event.pull_request.draft == false && !(!needs.skipDuplicateActions.outputs.ignore_skip && fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.should_skip && fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.skipped_by.branch == github.head_ref) }}
-          echo ignore: ${{ github.event.pull_request.merged == false && github.event.pull_request.draft == false && (needs.skipDuplicateActions.outputs.ignore_skip || !(fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.should_skip && fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.skipped_by.branch == github.head_ref)) }}
+          echo skip-ignore: ${{ needs.skipDuplicateActions.outputs.ignore_skip }}
+          echo if and: ${{ github.event.pull_request.merged == false && github.event.pull_request.draft == false && !(!needs.skipDuplicateActions.outputs.ignore_skip && fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.should_skip && fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.skipped_by.branch == github.head_ref) }}
+          echo if or: ${{ github.event.pull_request.merged == false && github.event.pull_request.draft == false && (needs.skipDuplicateActions.outputs.ignore_skip || !(fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.should_skip && fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.skipped_by.branch == github.head_ref)) }}
 
   # Checkout the repo once and cache it for use in subsequent jobs
   checkoutRepo:
