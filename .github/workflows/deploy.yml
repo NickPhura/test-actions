@@ -67,7 +67,8 @@ jobs:
                 - 'app2/src/**/*.test.ts'
                 - 'app2/**.md'
 
-      # Get the head commit for this pull request, and parse out the commit message.
+      # Get the head commit for this pull request, parse out the commit message, and assign to the `commit_message`
+      # output variable.
       - name: Checkout head commit
         uses: actions/checkout@v3
         with:
@@ -143,7 +144,15 @@ jobs:
     name: Build APP Image
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    if: $IS_MERGED == false && IS_DRAFT == $false && ($IGNORE_SKIP == true || $SHOULD_SKIP == false)
+    if: |
+      github.event.pull_request.merged == false && 
+      github.event.pull_request.draft == false && (
+        needs.skipDuplicateActions.outputs.ignore_skip == true || 
+        (
+          fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.should_skip && 
+          fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.skipped_by.branch == github.head_ref
+        ) == false
+      )
     # if: |
     #   github.event.pull_request.merged == false &&
     #   github.event.pull_request.draft == false &&
@@ -151,10 +160,6 @@ jobs:
     #     !(fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.should_skip &&
     #     fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.skipped_by.branch == github.head_ref))
     env:
-      IS_MERGED: ${{ github.event.pull_request.merged }}
-      IS_DRAFT: ${{ github.event.pull_request.draft }}
-      SHOULD_SKIP: ${{ fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.should_skip && fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.skipped_by.branch == github.head_ref }}
-      IGNORE_SKIP: ${{ needs.skipDuplicateActions.outputs.ignore_skip }}
       PR_NUMBER: ${{ github.event.number }}
       APP_NAME: "biohubbc-app"
     needs:
@@ -199,18 +204,22 @@ jobs:
     name: Build APP2 Image
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    if: $IS_MERGED == false && $IS_DRAFT == false && ($IGNORE_SKIP == true || $SHOULD_SKIP == false)
+    if: |
+      github.event.pull_request.merged == false && 
+      github.event.pull_request.draft == false && (
+        needs.skipDuplicateActions.outputs.ignore_skip == true || 
+        (
+          fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.should_skip && 
+          fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.skipped_by.branch == github.head_ref
+        ) == false
+      )
     # if: |
-    #   github.event.pull_request.merged == false && 
-    #   github.event.pull_request.draft == false && 
-    #   (needs.skipDuplicateActions.outputs.ignore_skip || 
-    #     !(fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.should_skip && 
+    #   github.event.pull_request.merged == false &&
+    #   github.event.pull_request.draft == false &&
+    #   (needs.skipDuplicateActions.outputs.ignore_skip ||
+    #     !(fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.should_skip &&
     #     fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.skipped_by.branch == github.head_ref))
     env:
-      IS_MERGED: ${{ github.event.pull_request.merged }}
-      IS_DRAFT: ${{ github.event.pull_request.draft }}
-      SHOULD_SKIP: ${{ fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.should_skip && fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.skipped_by.branch == github.head_ref }}
-      IGNORE_SKIP: ${{ needs.skipDuplicateActions.outputs.ignore_skip }}
       PR_NUMBER: ${{ github.event.number }}
       APP_NAME: "biohubbc-app"
     needs:
