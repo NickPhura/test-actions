@@ -101,7 +101,11 @@ jobs:
           echo _IGNORE_SKIP: $IGNORE_SKIP
           echo _SHOULD_SKIP: $SHOULD_SKIP
           echo conclusion1: ${{ github.event.pull_request.merged == false && github.event.pull_request.draft == false }}
+          echo conclusion1: ${{ github.event.pull_request.merged == 'false' }}
+          echo conclusion1: ${{ !!github.event.pull_request.merged }}
           echo conclusion2: ${{ needs.skipDuplicateActions.outputs.ignore_skip == true }}
+          echo conclusion2: ${{ needs.skipDuplicateActions.outputs.ignore_skip == 'true' }}
+          echo conclusion2: ${{ !!needs.skipDuplicateActions.outputs.ignore_skip }}
           echo conclusion3: ${{ fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.should_skip == true && 
                                 fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.skipped_by.branch == github.head_ref 
                             }}
