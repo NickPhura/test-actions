@@ -84,7 +84,7 @@ jobs:
     timeout-minutes: 20
     if: ${{ github.event.pull_request.merged == false }}
     env:
-      IS_MERGED: ${{ github.event.pull_request.merged }}
+      IS_MERGED: github.event.pull_request.merged
       IS_DRAFT: ${{ github.event.pull_request.draft }}
       SHOULD_SKIP: ${{ fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.should_skip && fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.skipped_by.branch == github.head_ref }}
       IGNORE_SKIP: ${{ needs.skipDuplicateActions.outputs.ignore_skip }}
