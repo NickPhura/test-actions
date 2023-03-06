@@ -44,7 +44,7 @@ jobs:
       paths_result: ${{ steps.skip_check.outputs.paths_result }}
       # Set to `true` if the latest commit message contains `ignore-skip` anywhere in the message.
       # Used to disable duplicate action skipping, if needed.
-      ignore_skip: ${{ toJSON(contains(steps.head_commit_message.outputs.commit_message, 'ignore-skip')) }}
+      ignore_skip: ${{ contains(steps.head_commit_message.outputs.commit_message, 'ignore-skip') == 'true' }}
     steps:
       - id: skip_check
         uses: fkirc/skip-duplicate-actions@v5
