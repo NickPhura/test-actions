@@ -43,7 +43,7 @@ jobs:
       should_skip: ${{ steps.skip_check.outputs.should_skip }}
       paths_result: ${{ steps.skip_check.outputs.paths_result }}
       # Set to `true` if the latest commit message contains `ignore-skip` anywhere in the message.
-      # Is used to disable duplicate action skipping when needed.
+      # Used to disable duplicate action skipping, if needed.
       ignore_skip: ${{ contains(steps.head_commit_message.outputs.commit_message, 'ignore-skip') }}
     steps:
       - id: skip_check
@@ -57,6 +57,7 @@ jobs:
                 - 'app/.pipeline/**'
               paths_ignore:
                 - 'app/src/**/*.test.ts'
+                - 'app/src/**/*.test.js'
                 - 'app/**.md'
             app2:
               paths:
@@ -65,6 +66,7 @@ jobs:
                 - 'app2/.pipeline/**'
               paths_ignore:
                 - 'app2/src/**/*.test.ts'
+                - 'app2/src/**/*.test.js'
                 - 'app2/**.md'
 
       # Get the head commit for this pull request, parse out the commit message, and assign to the `commit_message`
