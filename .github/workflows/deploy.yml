@@ -100,21 +100,30 @@ jobs:
           echo _IS_DRAFT: $IS_DRAFT
           echo _IGNORE_SKIP: $IGNORE_SKIP
           echo _SHOULD_SKIP: $SHOULD_SKIP
-          echo conclusion1: ${{ github.event.pull_request.merged == false && github.event.pull_request.draft == false }}
+          echo conclusion1: ${{ github.event.pull_request.merged == false }}
           echo conclusion1: ${{ github.event.pull_request.merged == 'false' }}
-          echo conclusion1: ${{ !!github.event.pull_request.merged }}
-          echo conclusion2: ${{ needs.skipDuplicateActions.outputs.ignore_skip == true }}
-          echo conclusion2: ${{ needs.skipDuplicateActions.outputs.ignore_skip == 'true' }}
-          echo conclusion2: ${{ !!needs.skipDuplicateActions.outputs.ignore_skip }}
-          echo conclusion3: ${{ fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.should_skip == true && 
-                                fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.skipped_by.branch == github.head_ref 
-                            }}
-          echo conclusion4: ${{ needs.skipDuplicateActions.outputs.ignore_skip == true || (
+
+          echo conclusion2: ${{ github.event.pull_request.draft == false }}
+          echo conclusion2: ${{ github.event.pull_request.draft == 'false' }}
+
+          echo conclusion3: ${{ needs.skipDuplicateActions.outputs.ignore_skip == true }}
+          echo conclusion3: ${{ needs.skipDuplicateActions.outputs.ignore_skip == 'true' }}
+
+          echo conclusion4: ${{ fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.should_skip == true }}
+          echo conclusion4: ${{ fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.should_skip == 'true' }}
+
+          echo conclusion5: ${{ fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.should_skip == true }}
+          echo conclusion5: ${{ fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.should_skip == 'true' }}
+
+          echo conclusion6: ${{ fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.skipped_by.branch == github.head_ref }}
+
+          echo conclusion7: ${{ needs.skipDuplicateActions.outputs.ignore_skip == true || (
                                   fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.should_skip == true && 
                                   fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.skipped_by.branch == github.head_ref
                                 )
                             }}
-          echo conclusion5: ${{ github.event.pull_request.merged == false && 
+                            
+          echo conclusion8: ${{ github.event.pull_request.merged == false && 
                                 github.event.pull_request.draft == false && (
                                   needs.skipDuplicateActions.outputs.ignore_skip == true || (
                                     fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.should_skip == true && 
