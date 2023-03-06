@@ -102,9 +102,22 @@ jobs:
           echo _SHOULD_SKIP: $SHOULD_SKIP
           echo conclusion1: ${{ github.event.pull_request.merged == false && github.event.pull_request.draft == false }}
           echo conclusion2: ${{ needs.skipDuplicateActions.outputs.ignore_skip == true }}
-          echo conclusion3: ${{ fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.should_skip == true && fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.skipped_by.branch == github.head_ref }}
-          echo conclusion4: ${{ needs.skipDuplicateActions.outputs.ignore_skip == true || (fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.should_skip == true && fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.skipped_by.branch == github.head_ref) }}
-          echo conclusion5: ${{ github.event.pull_request.merged == false && github.event.pull_request.draft == false && (needs.skipDuplicateActions.outputs.ignore_skip == true || (needs.skipDuplicateActions.outputs.ignore_skip == true || (fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.should_skip == true && fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.skipped_by.branch == github.head_ref) }}
+          echo conclusion3: ${{ fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.should_skip == true && 
+                                fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.skipped_by.branch == github.head_ref 
+                            }}
+          echo conclusion4: ${{ needs.skipDuplicateActions.outputs.ignore_skip == true || (
+                                  fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.should_skip == true && 
+                                  fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.skipped_by.branch == github.head_ref
+                                )
+                            }}
+          echo conclusion5: ${{ github.event.pull_request.merged == false && 
+                                github.event.pull_request.draft == false && (
+                                  needs.skipDuplicateActions.outputs.ignore_skip == true || (
+                                    fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.should_skip == true && 
+                                    fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.skipped_by.branch == github.head_ref
+                                  )
+                                )
+                            }}
 
   # Checkout the repo once and cache it for use in subsequent jobs
   checkoutRepo:
