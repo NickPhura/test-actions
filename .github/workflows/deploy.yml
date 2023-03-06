@@ -122,7 +122,11 @@ jobs:
     name: Build APP Image
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    if: ${{ (fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.should_skip == true && fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.skipped_by.branch != github.head_ref) == false }}
+    if: ${{ github.event.pull_request.merged == false &&
+      github.event.pull_request.draft == false && (
+      needs.skipDuplicateActions.outputs.ignore_skip == true ||
+      fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.should_skip == false ||
+      fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.skipped_by.branch != github.head_ref ) }}
     # if: |
     #   github.event.pull_request.merged == false &&
     #   github.event.pull_request.draft == false &&
@@ -174,65 +178,11 @@ jobs:
     name: Build APP2 Image
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    if: ${{ needs.skipDuplicateActions.outputs.ignore_skip == 'true' }}
-    # if: |
-    #   github.event.pull_request.merged == false &&
-    #   github.event.pull_request.draft == false &&
-    #   (needs.skipDuplicateActions.outputs.ignore_skip ||
-    #     !(fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.should_skip &&
-    #     fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.skipped_by.branch == github.head_ref))
-    env:
-      PR_NUMBER: ${{ github.event.number }}
-      APP_NAME: "biohubbc-app"
-    needs:
-      - checkoutRepo
-      - skipDuplicateActions
-    steps:
-      # Load repo from cache
-      - name: Cache repo
-        uses: actions/cache@v3
-        id: cache-repo
-        env:
-          cache-name: cache-repo
-        with:
-          path: ${{ github.workspace }}/*
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.sha }}
-
-      # Checkout the branch if not restored via cache
-      - name: Checkout Target Branch
-        if: steps.cache-repo.outputs.cache-hit != 'true'
-        uses: actions/checkout@v3
-
-      # Install Node - for `node` and `npm` commands
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 14
-
-      # Install app pipeline node modules
-      # Note: This already caches node modules internally
-      - name: Install pipeline node modules
-        working-directory: app/.pipeline/
-        run: npm ci
-
-      # Build the app image
-      - name: Build APP Image
-        working-directory: app/.pipeline/
-        run: |
-          DEBUG=* npm run build -- --pr=$PR_NUMBER
-
-  # Build the web frontend app image
-  buildAPP3:
-    name: Build APP3 Image
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-    if: ${{ needs.skipDuplicateActions.outputs.ignore_skip == true }}
-    # if: |
-    #   github.event.pull_request.merged == false &&
-    #   github.event.pull_request.draft == false &&
-    #   (needs.skipDuplicateActions.outputs.ignore_skip ||
-    #     !(fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.should_skip &&
-    #     fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.skipped_by.branch == github.head_ref))
+    if: ${{ github.event.pull_request.merged == false &&
+      github.event.pull_request.draft == false && (
+      needs.skipDuplicateActions.outputs.ignore_skip == 'true' ||
+      fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.should_skip == false ||
+      fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.skipped_by.branch != github.head_ref ) }}
     env:
       PR_NUMBER: ${{ github.event.number }}
       APP_NAME: "biohubbc-app"
