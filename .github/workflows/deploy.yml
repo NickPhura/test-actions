@@ -78,29 +78,29 @@ jobs:
           echo commit message: $(git show -s --format=%s)
           echo "commit_message=$(git show -s --format=%s)" >> $GITHUB_OUTPUT
 
-  checkEnv2:
-    name: Print Env variables
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-    if: ${{ github.event.pull_request.merged == false }}
-    env:
-      IS_MERGED: ${{ github.event.pull_request.merged }}
-      IS_DRAFT: ${{ github.event.pull_request.draft }}
-      SHOULD_SKIP: ${{ fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.should_skip && fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.skipped_by.branch == github.head_ref }}
-      IGNORE_SKIP: ${{ needs.skipDuplicateActions.outputs.ignore_skip }}
-    needs:
-      - skipDuplicateActions
-    steps:
-      - name: Print Env Vars 2
-        run: |
-          echo _IS_MERGED: $IS_MERGED
-          echo _IS_DRAFT: $IS_DRAFT
-          echo _IGNORE_SKIP: $IGNORE_SKIP
-          echo _SHOULD_SKIP: $SHOULD_SKIP
-          # echo _others: ${{ $IS_MERGED == false && $IS_DRAFT == false }}
-          echo if or small: ${{ $IGNORE_SKIP == true || $SHOULD_SKIP == false }}
-          echo if or small: ${{ $IS_MERGED == false && $IS_DRAFT == false && ($IGNORE_SKIP == true || $SHOULD_SKIP == false) }}
-          echo if and small: ${{ $IS_MERGED == false && $IS_DRAFT == false && !($IGNORE_SKIP == false && $SHOULD_SKIP == true) }}
+  # checkEnv2:
+  #   name: Print Env variables
+  #   runs-on: ubuntu-latest
+  #   timeout-minutes: 20
+  #   if: ${{ github.event.pull_request.merged == false }}
+  #   env:
+  #     IS_MERGED: ${{ github.event.pull_request.merged }}
+  #     IS_DRAFT: ${{ github.event.pull_request.draft }}
+  #     SHOULD_SKIP: ${{ fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.should_skip && fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.skipped_by.branch == github.head_ref }}
+  #     IGNORE_SKIP: ${{ needs.skipDuplicateActions.outputs.ignore_skip }}
+  #   needs:
+  #     - skipDuplicateActions
+  #   steps:
+  #     - name: Print Env Vars 2
+  #       run: |
+  #         echo _IS_MERGED: $IS_MERGED
+  #         echo _IS_DRAFT: $IS_DRAFT
+  #         echo _IGNORE_SKIP: $IGNORE_SKIP
+  #         echo _SHOULD_SKIP: $SHOULD_SKIP
+  #         # echo _others: ${{ $IS_MERGED == false && $IS_DRAFT == false }}
+  #         echo if or small: ${{ $IGNORE_SKIP == true || $SHOULD_SKIP == false }}
+  #         echo if or small: ${{ $IS_MERGED == false && $IS_DRAFT == false && ($IGNORE_SKIP == true || $SHOULD_SKIP == false) }}
+  #         echo if and small: ${{ $IS_MERGED == false && $IS_DRAFT == false && !($IGNORE_SKIP == false && $SHOULD_SKIP == true) }}
 
   # Checkout the repo once and cache it for use in subsequent jobs
   checkoutRepo:
@@ -113,7 +113,6 @@ jobs:
     env:
       PR_NUMBER: ${{ github.event.number }}
     needs:
-      - checkEnv2
       - skipDuplicateActions
     steps:
       - name: Checkout Target Branch
@@ -144,13 +143,18 @@ jobs:
     name: Build APP Image
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    if: |
-      github.event.pull_request.merged == false && 
-      github.event.pull_request.draft == false && 
-      (needs.skipDuplicateActions.outputs.ignore_skip || 
-        !(fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.should_skip && 
-        fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.skipped_by.branch == github.head_ref))
+    if: $IS_MERGED == false && IS_DRAFT == $false && ($IGNORE_SKIP == true || $SHOULD_SKIP == false)
+    # if: |
+    #   github.event.pull_request.merged == false &&
+    #   github.event.pull_request.draft == false &&
+    #   (needs.skipDuplicateActions.outputs.ignore_skip ||
+    #     !(fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.should_skip &&
+    #     fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.skipped_by.branch == github.head_ref))
     env:
+      IS_MERGED: ${{ github.event.pull_request.merged }}
+      IS_DRAFT: ${{ github.event.pull_request.draft }}
+      SHOULD_SKIP: ${{ fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.should_skip && fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.skipped_by.branch == github.head_ref }}
+      IGNORE_SKIP: ${{ needs.skipDuplicateActions.outputs.ignore_skip }}
       PR_NUMBER: ${{ github.event.number }}
       APP_NAME: "biohubbc-app"
     needs:
@@ -195,13 +199,18 @@ jobs:
     name: Build APP2 Image
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    if: |
-      github.event.pull_request.merged == false && 
-      github.event.pull_request.draft == false && 
-      (needs.skipDuplicateActions.outputs.ignore_skip || 
-        !(fromJSON(needs.skipDuplicateActions.outputs.paths_result).app2.should_skip && 
-        fromJSON(needs.skipDuplicateActions.outputs.paths_result).app2.skipped_by.branch == github.head_ref))
+    if: $IS_MERGED == false && $IS_DRAFT == false && ($IGNORE_SKIP == true || $SHOULD_SKIP == false)
+    # if: |
+    #   github.event.pull_request.merged == false && 
+    #   github.event.pull_request.draft == false && 
+    #   (needs.skipDuplicateActions.outputs.ignore_skip || 
+    #     !(fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.should_skip && 
+    #     fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.skipped_by.branch == github.head_ref))
     env:
+      IS_MERGED: ${{ github.event.pull_request.merged }}
+      IS_DRAFT: ${{ github.event.pull_request.draft }}
+      SHOULD_SKIP: ${{ fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.should_skip && fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.skipped_by.branch == github.head_ref }}
+      IGNORE_SKIP: ${{ needs.skipDuplicateActions.outputs.ignore_skip }}
       PR_NUMBER: ${{ github.event.number }}
       APP_NAME: "biohubbc-app"
     needs:
