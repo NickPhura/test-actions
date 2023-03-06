@@ -93,10 +93,10 @@ jobs:
     steps:
       - name: Print Env Vars 2
         run: |
-          echo IS_MERGED: $IS_MERGED
-          echo IS_DRAFT: $IS_DRAFT
-          echo IGNORE_SKIP: $IGNORE_SKIP
-          echo SHOULD_SKIP: $SHOULD_SKIP
+          echo IS_MERGED: ${{ IS_MERGED }}
+          echo IS_DRAFT: ${{ IS_DRAFT }}
+          echo IGNORE_SKIP: ${{ IGNORE_SKIP}}
+          echo SHOULD_SKIP: ${{ SHOULD_SKIP }}
           echo if or small: ${{ IGNORE_SKIP || !SHOULD_SKIP }}
           echo if or small: ${{ !IS_MERGED && !IS_DRAFT && (IGNORE_SKIP || !SHOULD_SKIP) }}
           echo if and small: ${{ !IS_MERGED && !IS_DRAFT && !(!IGNORE_SKIP && SHOULD_SKIP) }}
