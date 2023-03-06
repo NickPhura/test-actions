@@ -122,10 +122,7 @@ jobs:
     name: Build APP Image
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    if: |
-      ${{ 
-        fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.should_skip != true || fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.skipped_by.branch != github.head_ref
-      }}
+    if: ${{ (fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.should_skip == true && fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.skipped_by.branch != github.head_ref) == false }}
     # if: |
     #   github.event.pull_request.merged == false &&
     #   github.event.pull_request.draft == false &&
@@ -177,8 +174,7 @@ jobs:
     name: Build APP2 Image
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    if: |
-      ${{ needs.skipDuplicateActions.outputs.ignore_skip == 'true' }}
+    if: ${{ needs.skipDuplicateActions.outputs.ignore_skip == 'true' }}
     # if: |
     #   github.event.pull_request.merged == false &&
     #   github.event.pull_request.draft == false &&
@@ -230,8 +226,7 @@ jobs:
     name: Build APP3 Image
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    if: |
-      ${{ needs.skipDuplicateActions.outputs.ignore_skip == true }}
+    if: ${{ needs.skipDuplicateActions.outputs.ignore_skip == true }}
     # if: |
     #   github.event.pull_request.merged == false &&
     #   github.event.pull_request.draft == false &&
