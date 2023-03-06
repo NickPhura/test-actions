@@ -97,10 +97,10 @@ jobs:
           echo _IS_DRAFT: $IS_DRAFT
           echo _IGNORE_SKIP: $IGNORE_SKIP
           echo _SHOULD_SKIP: $SHOULD_SKIP
-          echo _others: ($IS_MERGED == false && $IS_DRAFT == false)
-          echo if or small: ($IGNORE_SKIP == true || $SHOULD_SKIP == false)
-          echo if or small: ($IS_MERGED == false && $IS_DRAFT == false && ($IGNORE_SKIP == true || $SHOULD_SKIP == false))
-          echo if and small: ($IS_MERGED == false && $IS_DRAFT == false && !($IGNORE_SKIP == false && $SHOULD_SKIP == true))
+          echo _others: $IS_MERGED == false && $IS_DRAFT == false
+          echo if or small: $IGNORE_SKIP == true || $SHOULD_SKIP == false
+          echo if or small: $IS_MERGED == false && $IS_DRAFT == false && ($IGNORE_SKIP == true || $SHOULD_SKIP == false)
+          echo if and small: $IS_MERGED == false && $IS_DRAFT == false && !($IGNORE_SKIP == false && $SHOULD_SKIP == true)
 
   # Checkout the repo once and cache it for use in subsequent jobs
   checkoutRepo:
