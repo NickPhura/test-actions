@@ -172,7 +172,7 @@ jobs:
         run: |
           DEBUG=* npm run build -- --pr=$PR_NUMBER
 
-  # Build the web frontend app image
+  # Build the web frontend app images
   buildAPP2:
     name: Build APP2 Image
     runs-on: ubuntu-latest
