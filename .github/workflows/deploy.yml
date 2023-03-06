@@ -81,78 +81,6 @@ jobs:
           echo commit message: $(git show -s --format=%s)
           echo "commit_message=$(git show -s --format=%s)" >> $GITHUB_OUTPUT
 
-  checkEnv2:
-    name: Print Env variables
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-    if: ${{ github.event.pull_request.merged == false }}
-    env:
-      IS_MERGED: ${{ github.event.pull_request.merged }}
-      IS_DRAFT: ${{ github.event.pull_request.draft }}
-      IGNORE_SKIP: ${{ needs.skipDuplicateActions.outputs.ignore_skip }}
-      SHOULD_SKIP: ${{ fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.should_skip && fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.skipped_by.branch == github.head_ref }}
-    needs:
-      - skipDuplicateActions
-    steps:
-      - name: Print Env Vars 2
-        run: |
-          echo _IS_MERGED: $IS_MERGED
-          echo _IS_DRAFT: $IS_DRAFT
-          echo _IGNORE_SKIP: $IGNORE_SKIP
-          echo _SHOULD_SKIP: $SHOULD_SKIP
-
-          # echo conclusion1: ${{ github.event.pull_request.merged == false }} #true <--
-          # echo conclusion1: ${{ github.event.pull_request.merged == 'false' }} #false
-
-          # echo conclusion2: ${{ github.event.pull_request.draft == false }} #true <--
-          # echo conclusion2: ${{ github.event.pull_request.draft == 'false' }} #false
-
-          echo conclusion3: ${{ needs.skipDuplicateActions.outputs.ignore_skip == true }} #false
-          echo conclusion3: ${{ needs.skipDuplicateActions.outputs.ignore_skip == 'true' }} #true <--
-
-          echo conclusion3: ${{ needs.skipDuplicateActions.outputs.ignore_skip == false }}
-          echo conclusion3: ${{ needs.skipDuplicateActions.outputs.ignore_skip == 'false' }}
-
-          echo conclusion5: ${{ fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.should_skip == true }} #true <--
-          echo conclusion5: ${{ fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.should_skip == 'true' }} #false
-          echo conclusion5: ${{ fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.should_skip == false }} #false
-          echo conclusion5: ${{ fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.should_skip == 'false' }} #false
-
-          echo conclusion6: ${{ fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.should_skip == true && fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.skipped_by.branch == github.head_ref }}
-
-          echo conclusion7: ${{ needs.skipDuplicateActions.outputs.ignore_skip == 'true' || !(fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.should_skip == true && fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.skipped_by.branch == github.head_ref) }}
-          echo conclusion7: ${{ needs.skipDuplicateActions.outputs.ignore_skip == true || !(fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.should_skip == true && fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.skipped_by.branch == github.head_ref) }}
-
-          echo conclusion7: ${{ needs.skipDuplicateActions.outputs.ignore_skip == 'true' || (fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.should_skip == false && fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.skipped_by.branch == github.head_ref) }}
-          echo conclusion7: ${{ needs.skipDuplicateActions.outputs.ignore_skip == true || (fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.should_skip == false && fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.skipped_by.branch == github.head_ref) }}
-
-          echo conclusion8: ${{ github.event.pull_request.merged == false && 
-                                github.event.pull_request.draft == false && (
-                                  needs.skipDuplicateActions.outputs.ignore_skip == 'true' || !(
-                                    fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.should_skip == true && 
-                                    fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.skipped_by.branch == github.head_ref
-                                  )
-                                )
-                            }}
-
-          echo conclusion9: ${{ github.event.pull_request.merged == false && 
-                                github.event.pull_request.draft == false && (
-                                  needs.skipDuplicateActions.outputs.ignore_skip == true || !(
-                                    fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.should_skip == true && 
-                                    fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.skipped_by.branch == github.head_ref
-                                  )
-                                )
-                            }}
-
-          echo conclusion10: ${{ github.event.pull_request.merged == false && 
-                                 github.event.pull_request.draft == false && 
-                                 (
-                                   needs.skipDuplicateActions.outputs.ignore_skip == true || 
-                                   fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.should_skip != true || 
-                                   fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.skipped_by.branch != github.head_ref
-                                 )
-                             }}
-
   # Checkout the repo once and cache it for use in subsequent jobs
   checkoutRepo:
     name: Checkout and cache target branch
@@ -195,13 +123,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     if: |
-      ${{ github.event.pull_request.merged == false && 
-          github.event.pull_request.draft == false && 
-          (
-            needs.skipDuplicateActions.outputs.ignore_skip == 'true' || 
-            fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.should_skip != true || 
-            fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.skipped_by.branch != github.head_ref
-          )
+      ${{ 
+        fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.should_skip != true || fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.skipped_by.branch != github.head_ref
       }}
     # if: |
     #   github.event.pull_request.merged == false &&
@@ -255,14 +178,60 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     if: |
-      ${{ github.event.pull_request.merged == false && 
-          github.event.pull_request.draft == false && 
-          (
-            needs.skipDuplicateActions.outputs.ignore_skip == true || 
-            fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.should_skip != true || 
-            fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.skipped_by.branch != github.head_ref
-          )
-      }}
+      ${{ needs.skipDuplicateActions.outputs.ignore_skip == 'true' }}
+    # if: |
+    #   github.event.pull_request.merged == false &&
+    #   github.event.pull_request.draft == false &&
+    #   (needs.skipDuplicateActions.outputs.ignore_skip ||
+    #     !(fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.should_skip &&
+    #     fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.skipped_by.branch == github.head_ref))
+    env:
+      PR_NUMBER: ${{ github.event.number }}
+      APP_NAME: "biohubbc-app"
+    needs:
+      - checkoutRepo
+      - skipDuplicateActions
+    steps:
+      # Load repo from cache
+      - name: Cache repo
+        uses: actions/cache@v3
+        id: cache-repo
+        env:
+          cache-name: cache-repo
+        with:
+          path: ${{ github.workspace }}/*
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.sha }}
+
+      # Checkout the branch if not restored via cache
+      - name: Checkout Target Branch
+        if: steps.cache-repo.outputs.cache-hit != 'true'
+        uses: actions/checkout@v3
+
+      # Install Node - for `node` and `npm` commands
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 14
+
+      # Install app pipeline node modules
+      # Note: This already caches node modules internally
+      - name: Install pipeline node modules
+        working-directory: app/.pipeline/
+        run: npm ci
+
+      # Build the app image
+      - name: Build APP Image
+        working-directory: app/.pipeline/
+        run: |
+          DEBUG=* npm run build -- --pr=$PR_NUMBER
+
+  # Build the web frontend app image
+  buildAPP3:
+    name: Build APP3 Image
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    if: |
+      ${{ needs.skipDuplicateActions.outputs.ignore_skip == true }}
     # if: |
     #   github.event.pull_request.merged == false &&
     #   github.event.pull_request.draft == false &&
