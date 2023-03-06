@@ -100,32 +100,27 @@ jobs:
           echo _IS_DRAFT: $IS_DRAFT
           echo _IGNORE_SKIP: $IGNORE_SKIP
           echo _SHOULD_SKIP: $SHOULD_SKIP
-          echo conclusion1: ${{ github.event.pull_request.merged == false }}
-          echo conclusion1: ${{ github.event.pull_request.merged == 'false' }}
 
-          echo conclusion2: ${{ github.event.pull_request.draft == false }}
-          echo conclusion2: ${{ github.event.pull_request.draft == 'false' }}
+          echo conclusion1: ${{ github.event.pull_request.merged == false }} #true !!
+          echo conclusion1: ${{ github.event.pull_request.merged == 'false' }} #false
 
-          echo conclusion3: ${{ needs.skipDuplicateActions.outputs.ignore_skip == true }}
-          echo conclusion3: ${{ needs.skipDuplicateActions.outputs.ignore_skip == 'true' }}
+          echo conclusion2: ${{ github.event.pull_request.draft == false }} #true !!
+          echo conclusion2: ${{ github.event.pull_request.draft == 'false' }} #false
 
-          echo conclusion4: ${{ fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.should_skip == true }}
-          echo conclusion4: ${{ fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.should_skip == 'true' }}
+          echo conclusion3: ${{ needs.skipDuplicateActions.outputs.ignore_skip == true }} #false
+          echo conclusion3: ${{ needs.skipDuplicateActions.outputs.ignore_skip == 'true' }} #true !!
 
-          echo conclusion5: ${{ fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.should_skip == true }}
-          echo conclusion5: ${{ fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.should_skip == 'true' }}
+          echo conclusion4: ${{ fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.should_skip == true }} #true !!
+          echo conclusion4: ${{ fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.should_skip == 'true' }} #false
 
-          echo conclusion6: ${{ fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.skipped_by.branch == github.head_ref }}
+          echo conclusion5: ${{ fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.should_skip == true }} #true !!
+          echo conclusion5: ${{ fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.should_skip == 'true' }} #false
 
-          echo conclusion7: ${{ needs.skipDuplicateActions.outputs.ignore_skip == true || (
-                                  fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.should_skip == true && 
-                                  fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.skipped_by.branch == github.head_ref
-                                )
-                            }}
-                            
+          echo conclusion6: ${{ fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.skipped_by.branch == github.head_ref }} #true
+
           echo conclusion8: ${{ github.event.pull_request.merged == false && 
                                 github.event.pull_request.draft == false && (
-                                  needs.skipDuplicateActions.outputs.ignore_skip == true || (
+                                  needs.skipDuplicateActions.outputs.ignore_skip == 'true' || (
                                     fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.should_skip == true && 
                                     fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.skipped_by.branch == github.head_ref
                                   )
@@ -174,14 +169,14 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     if: |
-      github.event.pull_request.merged == false && 
-      github.event.pull_request.draft == false && (
-        needs.skipDuplicateActions.outputs.ignore_skip == true || 
-        (
-          fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.should_skip && 
-          fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.skipped_by.branch == github.head_ref
-        ) == false
-      )
+      ${{ github.event.pull_request.merged == false && 
+          github.event.pull_request.draft == false && (
+            needs.skipDuplicateActions.outputs.ignore_skip == 'true' || (
+              fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.should_skip == true && 
+              fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.skipped_by.branch == github.head_ref
+            )
+          )
+      }}
     # if: |
     #   github.event.pull_request.merged == false &&
     #   github.event.pull_request.draft == false &&
@@ -234,14 +229,14 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     if: |
-      github.event.pull_request.merged == false && 
-      github.event.pull_request.draft == false && (
-        needs.skipDuplicateActions.outputs.ignore_skip == true || 
-        (
-          fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.should_skip && 
-          fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.skipped_by.branch == github.head_ref
-        ) == false
-      )
+      ${{ github.event.pull_request.merged == false && 
+          github.event.pull_request.draft == false && (
+            needs.skipDuplicateActions.outputs.ignore_skip == true || (
+              fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.should_skip == true && 
+              fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.skipped_by.branch == github.head_ref
+            )
+          )
+      }}
     # if: |
     #   github.event.pull_request.merged == false &&
     #   github.event.pull_request.draft == false &&
