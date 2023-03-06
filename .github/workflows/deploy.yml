@@ -113,6 +113,7 @@ jobs:
     env:
       PR_NUMBER: ${{ github.event.number }}
     needs:
+      - checkEnv2
       - skipDuplicateActions
     steps:
       - name: Checkout Target Branch
