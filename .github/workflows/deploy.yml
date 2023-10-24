@@ -46,6 +46,7 @@ jobs:
       # Used to disable duplicate action skipping, if needed.
       ignore_skip: ${{ contains(steps.head_commit_message.outputs.commit_message, 'ignore-skip') || 
         github.head_ref == 'dev' || github.head_ref == 'test' || github.head_ref == 'prod' }}
+      ignore_skip_2: ${{ contains(steps.head_commit_message.outputs.commit_message, 'ignore-skip') }}
     steps:
       - id: skip_check
         uses: fkirc/skip-duplicate-actions@v5
@@ -125,7 +126,7 @@ jobs:
     timeout-minutes: 20
     if: ${{ github.event.pull_request.merged == false &&
       github.event.pull_request.draft == false &&
-      ( needs.skipDuplicateActions.outputs.ignore_skip == 'true' ||
+      ( needs.skipDuplicateActions.outputs.ignore_skip_2 == 'true' ||
       fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.should_skip == false ||
       fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.skipped_by.branch != github.head_ref ) }}
     env:
